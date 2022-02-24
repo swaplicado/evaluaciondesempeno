@@ -28,5 +28,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::put('objetive/{id}', 'ObjetiveController@update')->name('actualizar_objetivo');
     Route::delete('objetive/{id}', 'ObjetiveController@destroy')->name('eliminar_objetivo');
     Route::post('objetive/guardar', 'ObjetiveController@send_to_aprove')->name('enviar_objetivo');
-    
+
+/* Tutorial */
+
+    Route::get('tutorial', 'TutorialController@index')->name('tutorial');
 });

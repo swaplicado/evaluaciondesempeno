@@ -248,6 +248,12 @@ return [
             'url'  => 'objetive',
             'icon' => 'fas fa-fw fa-list',
         ],
+        [
+            'text' => 'Tutorial',
+            'url' => 'tutorial',
+            'icon' => 'fas fa-fw fa-book',
+            'target' => '_blank',
+        ],
         
     ],
 
