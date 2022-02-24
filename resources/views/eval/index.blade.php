@@ -94,26 +94,41 @@
             <input type="hidden" value={{$ponderacion}} id="ponderacion" name="ponderacion">
         </div>
         <div class="card-footer border-success text-muted ">
-            <p><b>Ponderación total:</b> {{$ponderacion}}%</p>
+            <p style="font-size:20px;"><b>Ponderación total:</b> {{$ponderacion}}%</p>
             @switch($evaluacion[0]->eval_status_id)
                     @case(1)
-                        <p><b>Estatus evaluación:</b> <span class="badge badge-primary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;" badge badge-primary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
                         @break
                     @case(2)
-                        <p><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-primary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-primary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
                         @break
                     @case(3)
-                        <p><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
                         @break
             @endswitch
             @if($evaluacion[0]->comment != null)
-                <p class="card-text"><b>Comentario más reciente:</b><input class="form-control" type="text" value="{{$evaluacion[0]->comment}}" disabled="disabled"></p>
+                <p style="font-size:20px;" class="card-text"><b>Comentario más reciente:</b><input class="form-control" type="text" value="{{$evaluacion[0]->comment}}" disabled="disabled"></p>
             @else
-                <p class="card-text"><b>Comentario más reciente:</b><input class="form-control" type="text" value="Sin comentarios" disabled="disabled"></p>
+                <p style="font-size:20px;" class="card-text"><b>Comentario más reciente:</b><input class="form-control" type="text" value="Sin comentarios" disabled="disabled"></p>
             @endif
-            <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar">
-                <i class="fa fa-fw fa-share"></i> Enviar a evaluador
-            </button>
+
+            @switch($evaluacion[0]->eval_status_id)
+                    @case(1)
+                        <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar">
+                            <i class="fa fa-fw fa-share"></i> Enviar a evaluador
+                        </button>
+                        @break
+                    @case(2)
+                        <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar" disabled="disabled">
+                            <i class="fa fa-fw fa-share"></i> Enviar a evaluador
+                        </button>
+                        @break
+                    @case(3)
+                        <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar" disabled="disabled">
+                            <i class="fa fa-fw fa-share"></i> Enviar a evaluador
+                        </button>
+                        @break
+            @endswitch
         </div>
 
     </div>
