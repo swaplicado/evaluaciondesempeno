@@ -72,12 +72,12 @@
                             @endif
                             <td>
                                 @if ( $evaluacion[0]->eval_status_id == 1 || $evaluacion[0]->eval_status_id == 3)
-                                    <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary" title="Modificar este registro">
+                                    <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary" id="edicion" title="Modificar este registro">
                                         <i class="fa fa-fw fa-wrench"></i>
                                     </a>
                                     <form action="{{route('eliminar_objetivo', ['id' => $data->id_objetive])}}" class="d-inline form-eliminar" method="POST">
                                         @csrf @method("delete")
-                                        <button type="submit" class="btn btn-primary" title="Eliminar este registro">
+                                        <button type="submit" class="btn btn-primary" id="eliminacion" title="Eliminar este registro">
                                             <i class="fa fa-fw fa-trash"></i>
                                         </button>
                                     </form>
@@ -97,7 +97,7 @@
             <p style="font-size:20px;"><b>Ponderación total:</b> {{$ponderacion}}%</p>
             @switch($evaluacion[0]->eval_status_id)
                     @case(1)
-                        <p style="font-size:20px;" badge badge-primary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-primary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
                         @break
                     @case(2)
                         <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-primary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>

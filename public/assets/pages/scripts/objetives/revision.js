@@ -25,9 +25,7 @@ function agregar() {
 
             success: function(data) {
                 Swal.fire("Enviado", "Los objetivos se enviaron con exito", "success");
-                $('#crear').attr('disabled', true);
-                $('#enviar').attr('disabled', true);
-
+                setTimeout(() => { document.location.reload(); }, 2000);
             },
         });
     }

@@ -6,11 +6,11 @@
     <link rel="shortcut icon" href="{{ asset('favicons/icono.png') }}" />
     <h1><b>Evaluación de desempeño.</b> </h1>
     @if($tipo == 1)
-        <h3>La fecha limite es {{$limite}} ,faltan {{$diferencia}} días para que se cierre la evaluación.</h3>   
+        <h5>La fecha limite es <b>{{$limite}}</b>, faltan {{$diferencia}} días para que se cierre la evaluación.</h5>   
     @elseif($tipo == 2)
-        <h3>La fecha limite es {{$limite}} , hoy es cierre la evaluación.</h3> 
+        <h5>La fecha limite es <b>{{$limite}}</b>, hoy es cierre la evaluación.</h5> 
     @else
-        <h3>La fecha limite fue {{$limite}}.</h3> 
+        <h5>La fecha limite fue <b>{{$limite}}</b>.</h5> 
     @endif
 @stop
 

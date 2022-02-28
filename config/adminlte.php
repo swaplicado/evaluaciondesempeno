@@ -254,6 +254,11 @@ return [
             'icon' => 'fas fa-fw fa-book',
             'target' => '_blank',
         ],
+        [
+            'text'  => 'Cambiar contraseña',
+            'url' => 'user/change',
+            'icon'  => 'fas fa-fw fa-lock',
+        ],
         
     ],
 

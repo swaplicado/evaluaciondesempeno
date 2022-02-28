@@ -32,4 +32,9 @@ Route::group(['middleware' => ['auth']], function() {
 /* Tutorial */
 
     Route::get('tutorial', 'TutorialController@index')->name('tutorial');
+
+/* Contraseñas */
+
+    Route::get('user/change', 'UserController@change')->name('cambio_usuario');
+    Route::put('user/{id}/cambio', 'UserController@updatePassword')->name('actualizar_contraseña');
 });
