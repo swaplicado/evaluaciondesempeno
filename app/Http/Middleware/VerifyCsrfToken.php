@@ -19,6 +19,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        'objetive/guardar'
+        'objetive/guardar',
+        'objetive/evalrefuse'
     ];
 }

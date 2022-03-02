@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Score extends Model
 {
-    protected $table = 'scores';
+    protected $table = 'config_scores';
     protected $primaryKey = 'id_score';
 
     public function evaluation(){
