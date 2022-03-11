@@ -242,11 +242,18 @@ return [
             'url'  => 'admin/blog',
             'can'  => 'manage-blog',
         ],
-        
+        [
+            'header' => 'Evaluación Desempeño 2021',
+        ],
         [
             'text' => 'Mis objetivos',
             'url'  => 'objetive',
             'icon' => 'fas fa-fw fa-list',
+        ],
+        [
+            'text' => 'Objetivos colaboradores',
+            'url'  => 'objetive/list',
+            'icon' => 'fas fa-fw fa-users',
         ],
         [
             'text' => 'Tutorial',

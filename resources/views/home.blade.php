@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación desempeño')
+@section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
     <link rel="shortcut icon" href="{{ asset('favicons/icono.png') }}" />
@@ -43,9 +43,9 @@
     <p><b>Objetivo Organizacional 2022</b></p>
     <p>Impulsar el crecimiento rentable (EBITDA)</p>
     <p><b>Misión:</b></p>
-    <p>Producir aceites especiales de origen vegetal, para satisfacer las necesidades especificas del mercado nacional e internacional, promoviendo el desarrollo de la agricultura nacional; cubiendo las necesidades de nuestros colaboradores y otorgando rentabilidad a los accionistas.</p>
+    <p>Producir aceites especiales de origen vegetal, para satisfacer las necesidades especificas del mercado nacional e internacional, promoviendo el desarrollo de la agricultura nacional; cumpliendo las necesidades de nuestros colaboradores y otorgando rentabilidad a los accionistas.</p>
     <p><b>Visión:</b></p>
-    <p>Ser la empresa lider en extracción de aceites especiales de origen vegetal y pastas proteicas, utilizando materia prima nacional e inpulsando el campo agricola mexicano, logrando proporcionar al mercado los mejores procuctos en nustro ramo, cumpliendo así las expectativas del cliente.</p>
+    <p>Ser la empresa lider en extracción de aceites especiales de origen vegetal y pastas proteicas, utilizando materia prima nacional e impulsando el campo agricola mexicano, logrando proporcionar al mercado los mejores productos en nuestro ramo, cumpliendo así las expectativas del cliente.</p>
     <p><b>Competencias organizacionales:</b></p>
     <p><b>1. Orientación al logro:</b></p>
     <p>Es la tendencia al logro de resultados, fijando en primer lugar, metas desafiantes por encima de los estándares, mejorando y manteniendo altos niveles de rendimiento, en el marco de las estrategias de la organización.</p>

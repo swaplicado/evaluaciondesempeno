@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
     <h1>Mis objetivos de negocio (QUÉ)</h1>

@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::put('objetive/{id}', 'ObjetiveController@update')->name('actualizar_objetivo');
     Route::delete('objetive/{id}', 'ObjetiveController@destroy')->name('eliminar_objetivo');
     Route::post('objetive/guardar', 'ObjetiveController@send_to_aprove')->name('enviar_objetivo');
+    
 
 /* Tutorial */
 
@@ -37,4 +38,12 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('user/change', 'UserController@change')->name('cambio_usuario');
     Route::put('user/{id}/cambio', 'UserController@updatePassword')->name('actualizar_contraseña');
+
+/* Objetivos jefes */
+
+    Route::get('objetive/list', 'ObjetiveController@list_objetives')->name('listar_objetivos');
+    Route::post('objetive/evalrefuse', 'ObjetiveController@refuse_evaluation')->name('evaluacion_rechazar');
+    Route::post('objetive/evalaprove', 'ObjetiveController@aprove_score')->name('evaluacion_aprobar');
+    //Route::post('objetive/calificar', 'ObjetiveController@hola')->name('calificarObjetivo');
+    
 });

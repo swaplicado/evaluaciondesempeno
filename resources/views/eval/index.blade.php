@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
     <h1>Objetivos</h1>
@@ -97,13 +97,13 @@
             <p style="font-size:20px;"><b>Ponderación total:</b> {{$ponderacion}}%</p>
             @switch($evaluacion[0]->eval_status_id)
                     @case(1)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-primary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-primary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objtivos evaluados</span></p>
                         @break
                     @case(2)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-primary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-primary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objtivos evaluados</span></p>
                         @break
                     @case(3)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary">Definiendo objetivos</span> <span class="badge badge-secondary">Evaluando objetivos</span> <span class="badge badge-secondary">Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objtivos evaluados</span></p>
                         @break
             @endswitch
             @if($evaluacion[0]->comment != null)

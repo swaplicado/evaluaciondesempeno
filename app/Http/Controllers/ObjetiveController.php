@@ -12,6 +12,7 @@ use App\Models\Score;
 use DB;
 use App\SUtils\SEval;
 use App\SUtils\SObjetive;
+use App\Models\Eval_score_log;
 
 class ObjetiveController extends Controller
 {
@@ -24,7 +25,7 @@ class ObjetiveController extends Controller
     {
         $year = 1;
         $user = auth()->id();
-        $evaluacion = Evaluation::where('is_deleted',0)->where('user_id',$user)->where('year_id',$year)->get();
+        $evaluacion = Evaluation::where('is_deleted',0)->where('user_id',$user)->where('year_id',$year)->OrderBy('version','DESC')->get();
         
         $datas = Objetive::where('eval_id',$evaluacion[0]->id_eval)->where('is_deleted',0)->get();
         $evaluacion->each(function($datas){
@@ -162,7 +163,7 @@ class ObjetiveController extends Controller
     public function list_objetives(Request $request){
         $id_user = auth()->id();
         $user = User::findOrFail($id_user);
-        $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id.") AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id)");  
+        $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id.") AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id)");  
         
         $objetiveArray = [];
         $evalArray = [];
@@ -170,10 +171,15 @@ class ObjetiveController extends Controller
         for( $i = 0 ; count($empleados) > $i ; $i++ ){
             $objetivos = Objetive::where('eval_id',$empleados[$i]->id_eval)->where('is_deleted',0)->get();
             
+            $objetiveArray = [];
+            
+            
             for( $j = 0 ; count($objetivos) > $j ; $j++ ){
                 $objetiveRow = new SObjetive();
+                $objetiveRow->id_obj = $objetivos[$j]->id_objetive;
                 $objetiveRow->nameObj = $objetivos[$j]->name;
                 $objetiveRow->activitiesObj = $objetivos[$j]->activities;
+                $objetiveRow->score_id = $objetivos[$j]->score_id;
                 $objetiveRow->commentObj = $objetivos[$j]->comment;
                 $objetiveRow->weighing = $objetivos[$j]->weighing;
 
@@ -181,6 +187,7 @@ class ObjetiveController extends Controller
             }
 
             $evalRow = new SEval();
+            $evalRow->id_user = $empleados[$i]->id_user;
             $evalRow->eval_id = $empleados[$i]->id_eval;
             $evalRow->user_name = $empleados[$i]->name;
             $evalRow->year_id = $empleados[$i]->year_id;
@@ -188,6 +195,7 @@ class ObjetiveController extends Controller
             $evalRow->eval_status_id = $empleados[$i]->eval_status_id;
             $evalRow->eval_status_name = $empleados[$i]->status_name;
             $evalRow->score_id = $empleados[$i]->score_id;
+            $evalRow->score = $empleados[$i]->score;
             $evalRow->objetives = $objetiveArray;
             
             $evalArray[$i] = $evalRow;
@@ -195,8 +203,9 @@ class ObjetiveController extends Controller
 
         $scores = Score::where('is_deleted','0')->orderBy('id_score','ASC')->pluck('id_score','name');
 
+        $scoreName = Score::where('is_deleted','0')->orderBy('id_score','ASC')->get();
 
-        return view('eval.list', compact('evalArray'))->with('scores',$scores);
+        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName);
         
     }
 
@@ -216,11 +225,28 @@ class ObjetiveController extends Controller
         $clonEvaluacion->score = $evaluacion->score;
         $clonEvaluacion->score_id = $evaluacion->score_id;
         $clonEvaluacion->is_deleted = 0;
-        $clonEvaluacion->created_by = auth()->id();
-        $clonEvaluacion->updated_by = auth()->id();
+        $clonEvaluacion->created_by =  $evaluacion->created_by;
+        $clonEvaluacion->updated_by =  $evaluacion->updated_by;
         $clonEvaluacion->save(); 
 
+        //crear copias de objetivos
 
+        $objetivos = Objetive::where('eval_id',$request->id_evaluacion)->where('is_deleted',0)->get();
+
+        for( $i = 0 ; count($objetivos) > $i ; $i++){
+            $clonObj = new Objetive();
+            $clonObj->eval_id = $clonEvaluacion->id_eval;
+            $clonObj->name = $objetivos[$i]->name;
+            $clonObj->activities = $objetivos[$i]->activities;
+            $clonObj->comment = $objetivos[$i]->comment;
+            $clonObj->weighing = $objetivos[$i]->weighing;
+            $clonObj->score_id = $objetivos[$i]->score_id;
+            $clonObj->is_deleted = $objetivos[$i]->is_deleted;
+            $clonObj->created_by = $objetivos[$i]->created_by;
+            $clonObj->updated_by = $objetivos[$i]->updated_by;
+            $clonObj->save();
+
+        }
 
         //se mete al log lo sucedido
 
@@ -233,5 +259,43 @@ class ObjetiveController extends Controller
         $status_log->save();
         $data = 1;
         return response()->json(array($data));
+    }
+
+    public function aprove_score(Request $request){
+        $evaluacion = Evaluation::find($request->id_empleado);
+        $evaluacion->eval_status_id = 3;
+        $evaluacion->updated_by = auth()->id();
+        $evaluacion->score = $request->score;
+        $evaluacion->score_id = $request->score_redondeado;
+        $evaluacion->comment = $request->comentario;
+        $evaluacion->save();
+
+        $status_log = new Objetive_status_log();
+        $status_log->eval_id = $request->id_empleado;
+        $status_log->eval_status_id = 3;
+
+        $status_log->created_by = auth()->id();
+        $status_log->updated_by = auth()->id();
+        $status_log->save();
+
+        $log = new Eval_score_log();
+        $log->eval_id = $request->id_empleado;
+        $log->score = $request->score;
+        $log->score_id = $request->score_redondeado;
+
+        $log->created_by = auth()->id();
+        $log->updated_by = auth()->id();
+        $log->save();
+        
+        for($i = 0 ; count($request->arrNum) > $i ; $i++){
+            $obj = Objetive::findOrFail($request->arrNum[$i]);
+            $obj->score_id = $request->arrCal[$i];
+            
+            $obj->updated_by = auth()->id();
+            $obj->save();
+
+        }
+        $data = 1;
+        return response()->json(array($data));    
     }
 }
