@@ -26,10 +26,15 @@ class ObjetiveController extends Controller
         $year = 1;
         $user = auth()->id();
         $evaluacion = Evaluation::where('is_deleted',0)->where('user_id',$user)->where('year_id',$year)->OrderBy('version','DESC')->get();
-        
-        $datas = Objetive::where('eval_id',$evaluacion[0]->id_eval)->where('is_deleted',0)->get();
+
         $evaluacion->each(function($datas){
             $datas->eval_status;
+        });
+
+        $datas = Objetive::where('eval_id',$evaluacion[0]->id_eval)->where('is_deleted',0)->get();
+
+        $datas->each(function($data){
+            $data->score;
         });
         
         return view('eval.index', compact('datas'))->with('user',$user)->with('evaluacion',$evaluacion);

@@ -44,6 +44,11 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('objetive/list', 'ObjetiveController@list_objetives')->name('listar_objetivos');
     Route::post('objetive/evalrefuse', 'ObjetiveController@refuse_evaluation')->name('evaluacion_rechazar');
     Route::post('objetive/evalaprove', 'ObjetiveController@aprove_score')->name('evaluacion_aprobar');
-    //Route::post('objetive/calificar', 'ObjetiveController@hola')->name('calificarObjetivo');
+    //Route::post('objetive/calificar', 'ObjetiveController@hola')->name('calificarObjetivo'); 
+    
+/* Reportes */
+
+    Route::get('report/control/{id}', 'ReportController@control_report')->name('reporte_control');
+    Route::post('report/control/generar', 'ReportController@control_report_gen')->name('reporte_control_generar');
     
 });

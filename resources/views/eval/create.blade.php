@@ -25,7 +25,7 @@
                 <textarea rows="5" cols="60" name="activities" id="activities" class="form-control" required></textarea>
             </div>
             <div class="form-group">
-                <label for="weighing" class="form-label">Ponderación:*</label>
+                <label for="weighing" class="form-label">Ponderación %:*</label>
                 <input type="number" name="weighing" id="weighing" class="form-control" step="0.01" min="0" max="100" onchange="ponderacion(this.value)" required/>
             </div>
             <div class="form-group">

@@ -87,6 +87,8 @@ function aprobar(id_eval) {
 }
 
 function rechazar(id_eval) {
+    var nombre = "comentarios";
+    nombre = nombre.concat(id_eval);
     var anio = 2021;
     var comentarios = document.getElementById(nombre).value;
 
@@ -120,6 +122,7 @@ function rechazar(id_eval) {
     arreglo = arreglo.split(',');
 
     for (var i = 0; arreglo.length > i; i = i + 1) {
+
         document.getElementById(arreglo[i]).setAttribute('disabled', true);
 
     }

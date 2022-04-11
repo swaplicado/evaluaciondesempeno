@@ -3,7 +3,7 @@
 @section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
-    <h1>Objetivos</h1>
+    <h1>Mis objetivos</h1>
 @stop
 
 @section('content')
@@ -11,9 +11,12 @@
     <div class="card">
         <input type="hidden" id="id_empleado" name="id_empleado" value="{{$user}}">
         <input type="hidden" id="anio" name="anio" value="2021">
-        <input type="hidden" id="evaluacion" name="evaluacion" value="{{$evaluacion[0]->id_eval}}">
+        
         <div class="card-header">
             @if(count($evaluacion) > 0)
+
+                <input type="hidden" id="evaluacion" name="evaluacion" value="{{$evaluacion[0]->id_eval}}">
+                
                 @switch($evaluacion[0]->eval_status_id)
                     @case(1)
                         <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear">
@@ -26,7 +29,7 @@
                         </button>
                         @break
                     @case(3)
-                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear" >
+                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear" disabled="disabled">
                             <i class="fa fa-fw fa-plus-circle"></i> Nuevo
                         </button>
                         @break
@@ -66,12 +69,12 @@
                             <td>{{$data->name}}</td>
                             <td>{{$data->weighing}}%</td>
                             @if($data->score_id != null)
-                                <td>{{$data->score}}</td>
+                                <td>{{$data->score->name}}</td>
                             @else
                                 <td>Sin calificación</td>
                             @endif
                             <td>
-                                @if ( $evaluacion[0]->eval_status_id == 1 || $evaluacion[0]->eval_status_id == 3)
+                                @if ( $evaluacion[0]->eval_status_id == 1 )
                                     <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary" id="edicion" title="Modificar este registro">
                                         <i class="fa fa-fw fa-wrench"></i>
                                     </a>
@@ -103,7 +106,7 @@
                         <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-primary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objtivos evaluados</span></p>
                         @break
                     @case(3)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objtivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-primary"><i class="fa fa-check" aria-hidden="true"></i> Objtivos evaluados</span></p>
                         @break
             @endswitch
             @if($evaluacion[0]->comment != null)

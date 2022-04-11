@@ -249,11 +249,37 @@ return [
             'text' => 'Mis objetivos',
             'url'  => 'objetive',
             'icon' => 'fas fa-fw fa-list',
+            'can' => 'doEvaluation',
         ],
         [
-            'text' => 'Objetivos colaboradores',
+            'text' => 'Objetivos colab. dir.',
             'url'  => 'objetive/list',
             'icon' => 'fas fa-fw fa-users',
+        ],
+        [
+            'text'    => 'Seguimiento',
+            'icon' => 'fas fa-fw fa-file ',
+            'submenu' => [
+                [
+                    'text'    => 'Mis colaboradores dir.',
+                    'url'  => 'report/control/1',
+                    'icon' => 'fas fa-fw',
+                    
+                ],
+                [
+                    'text'    => 'Todos mis colaboradores',
+                    'url'  => 'report/control/2',
+                    'icon' => 'fas fa-fw',
+                    
+                ],
+                [
+                    'text'    => 'Todos los colaboradores',
+                    'url'  => 'report/control/3',
+                    'icon' => 'fas fa-fw',
+                    'can' => 'isAdmin',
+                    
+                ],
+            ],
         ],
         [
             'text' => 'Tutorial',

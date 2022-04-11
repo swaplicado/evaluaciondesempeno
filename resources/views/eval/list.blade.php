@@ -3,7 +3,7 @@
 @section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
-    <h1>Evaluaciones de mis colaboradores</h1>
+    <h1>Objetivos de mis colaboradores directos</h1>
 @stop
 
 @section('content')
@@ -19,19 +19,21 @@
                             <h2 class="mb-0">
                                 <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{$contadorEmpleados}}" aria-expanded="true" aria-controls="collapse{{$contadorEmpleados}}">
                                     @if($eval->eval_status_id == 1)
-                                        <span class="badge badge-primary"><i class="fa fa-list" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}} 
+                                        <span class="badge badge-primary"><i class="fa fa-list" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
                                     @elseif($eval->eval_status_id == 2)
-                                        <span class="badge badge-primary"><i class="fa fa-search" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}
+                                        <span class="badge badge-primary"><i class="fa fa-search" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
                                     @else
-                                        <span class="badge badge-primary"><i class="fa fa-check" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}
+                                        <span class="badge badge-primary"><i class="fa fa-check" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
                                     @endif
                                 </button>
                                 
                             </h2>
                         </div>
                         <?php $cadenaObjetivos = ""; ?>
+                        <?php $numeroObjetivo = 0 ; ?>
                         @foreach($eval->objetives as $objetive)
                         <?php $hay_indicador = 1; $num_obj++;?>
+                        <?php $numeroObjetivo++ ; ?>
                         @if ($cadenaObjetivos == "")
                             <?php $cadenaObjetivos = "calificacion_nueva".$objetive->id_obj ?> 
                         @else
@@ -41,7 +43,7 @@
                                     <div class="card-body">
                                         <div class="card">
                                             <div class="card-header">
-                                            {{$objetive->nameObj}}
+                                            {{$numeroObjetivo . ".- " . $objetive->nameObj}}
                                             </div>
                                             <div class="card-body">
                                                 <p class="card-text"><b>Actividades:</b> {{$objetive->activitiesObj}}</p>
