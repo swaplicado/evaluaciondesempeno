@@ -206,40 +206,43 @@ class ReportController extends Controller
                 }   
             }else{
 
-                $calificacion = DB::table('eval_scores_log')
-                                        ->where('eval_id',$employees[$i]->ideval)
-                                        ->count();
+                if( $employees[ $i ]->numero != $employees[ $i-1 ]->numero){
 
-                $userRow = new SEvaluatedEmployee();
-                $userRow->num_employee = $employees[ $i ]->numero;
-                $userRow->name_employee = $employees[ $i ]->colaborador;
-                $userRow->boss_employee = $employees[ $i ]->evaluador;
-                $userRow->depto_employee = $employees[ $i ]->department;
-                $userRow->calificacion = $employees[ $i ]->score;
+                    $calificacion = DB::table('eval_scores_log')
+                                            ->where('eval_id',$employees[$i]->ideval)
+                                            ->count();
 
-                if($employees[ $i ]->status > 1){
-                    $userRow->num_obj = $employees[ $i ]->version;
-                }else{
-                    $userRow->num_obj = $employees[ $i ]->version - 1;    
+                    $userRow = new SEvaluatedEmployee();
+                    $userRow->num_employee = $employees[ $i ]->numero;
+                    $userRow->name_employee = $employees[ $i ]->colaborador;
+                    $userRow->boss_employee = $employees[ $i ]->evaluador;
+                    $userRow->depto_employee = $employees[ $i ]->department;
+                    $userRow->calificacion = $employees[ $i ]->score;
+
+                    if($employees[ $i ]->status > 1){
+                        $userRow->num_obj = $employees[ $i ]->version;
+                    }else{
+                        $userRow->num_obj = $employees[ $i ]->version - 1;    
+                    }
+
+                    $userRow->num_calif = $calificacion;
+
+                    if($employees[$i]->status > 1){
+                        $userRow->objetives = 1;    
+                    }else{
+                        $userRow->objetives = 0;
+                    }
+
+                    if($employees[$i]->status > 2){
+                        $userRow->evaluation = 1;    
+                    }else{
+                        $userRow->evaluation = 0;
+                    }
+                    
+                    $employeesArray[$contador_empleados] = $userRow;  
+                    
+                    $contador_empleados++;
                 }
-
-                $userRow->num_calif = $calificacion;
-
-                if($employees[$i]->status > 1){
-                    $userRow->objetives = 1;    
-                }else{
-                    $userRow->objetives = 0;
-                }
-
-                if($employees[$i]->status > 2){
-                    $userRow->evaluation = 1;    
-                }else{
-                    $userRow->evaluation = 0;
-                }
-                
-                $employeesArray[$contador_empleados] = $userRow;  
-                
-                $contador_empleados++;
             }
             
         }
