@@ -168,7 +168,7 @@ class ObjetiveController extends Controller
     public function list_objetives(Request $request){
         $id_user = auth()->id();
         $user = User::findOrFail($id_user);
-        $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id.") AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id)");  
+        $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id.") AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id) AND ev.is_deleted = 0");  
         
         $objetiveArray = [];
         $evalArray = [];
