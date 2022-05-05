@@ -248,4 +248,17 @@ class ReportController extends Controller
 
         return view('reports.controlgen')->with('employees',$employees)->with('employeesArray',$employeesArray)->with('type',$request->type);
     }
+
+    public function evaluadores(){
+
+        $evaluadores = DB::table('evals as e')
+                            ->leftjoin('users AS eName', 'eName.id', '=', 'e.eval_user_id')
+                            ->leftjoin('users AS cName', 'cName.id', '=', 'e.user_id')
+                            ->select('e.*','eName.full_name as eval_name','cName.full_name as col_name')
+                            ->where('e.is_deleted',0)
+                            ->orderBy('eName.full_name')
+                            ->get();
+        
+        return view('reports.controlEvaluadores',['evaluadores' => $evaluadores]);
+    }
 }

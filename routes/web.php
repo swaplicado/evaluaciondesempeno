@@ -50,5 +50,6 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('report/control/{id}', 'ReportController@control_report')->name('reporte_control');
     Route::post('report/control/generar', 'ReportController@control_report_gen')->name('reporte_control_generar');
+    Route::get('report/control/evaluadores/colaboradores', 'ReportController@evaluadores')->name('evaluadores');
     
 });

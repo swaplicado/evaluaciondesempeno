@@ -279,6 +279,13 @@ return [
                     'can' => 'isAdmin',
                     
                 ],
+                [
+                    'text'    => 'Ver Evaluadores',
+                    'url'  => 'report/control/evaluadores/colaboradores',
+                    'icon' => 'fas fa-fw',
+                    'can' => 'isAdmin',
+                    
+                ],
             ],
         ],
         [
