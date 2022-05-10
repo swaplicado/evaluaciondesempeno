@@ -52,4 +52,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('report/control/generar', 'ReportController@control_report_gen')->name('reporte_control_generar');
     Route::get('report/control/evaluadores/colaboradores', 'ReportController@evaluadores')->name('evaluadores');
     
+/* Evaluadores */
+
+    Route::get('assigntEval','assigntEvalController@index')->name('assignt_eval');
+    Route::post('assigntEval/set','assigntEvalController@storage')->name('assignt_eval_save');
 });

@@ -289,6 +289,18 @@ return [
             ],
         ],
         [
+            'text'    => 'Configuración',
+            'icon' => 'fas fa-fw fa-cog ',
+            'submenu' => [
+                [
+                    'text' => 'Asignar evaluadores',
+                    'url' => 'assigntEval',
+                    'icon' => 'fas fa-fw',
+                    'can' => 'isAdmin',
+                ],
+            ],
+        ],
+        [
             'text' => 'Tutorial',
             'url' => 'tutorial',
             'icon' => 'fas fa-fw fa-book',

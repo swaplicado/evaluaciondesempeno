@@ -9,6 +9,19 @@ class Evaluation extends Model
     protected $table = 'evals';
     protected $primaryKey = 'id_eval';
     
+    protected $fillable = [
+        'year_id',
+        'user_id',
+        'version', 
+        'eval_user_id',
+        'comment',
+        'eval_status_id',
+        'score',
+        'score_id',
+        'is_deleted',
+        'created_by',
+        'updated_by'
+    ];
 
     public function year(){
         return $this->belongsTo('App\Models\Year','year_id');
