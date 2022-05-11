@@ -122,9 +122,10 @@ class ReportController extends Controller
         $departments = Department::where('is_delete', 0)->orderBy('name')->get();
 
         //saca el año
-        $anio = Year::where('is_deleted',0)->get();
+        $years = Year::where('is_deleted',0)->get();
         
-        return view('reports.control')->with('depatments',$departments)->with('type',$type)->with('id_user',$id_user);
+        return view('reports.control',['depatments' => $departments, 'type' => $type, 'id_user' => $id_user,
+        'id_year' => session()->get('id_year'), 'years' => $years]);
     }
 
     public function control_report_gen(Request $request){
@@ -256,6 +257,7 @@ class ReportController extends Controller
                             ->leftjoin('users AS cName', 'cName.id', '=', 'e.user_id')
                             ->select('e.*','eName.full_name as eval_name','cName.full_name as col_name')
                             ->where('e.is_deleted',0)
+                            ->where('e.year_id',session()->get('id_year'))
                             ->orderBy('eName.full_name')
                             ->get();
         

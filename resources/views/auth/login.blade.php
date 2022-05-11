@@ -40,6 +40,21 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="year" class="col-md-4 col-form-label text-md-right">Año evaluación</label>
+                            <div class="col-md-6">
+                                <select class="form-control" name="year" required>
+                                    @foreach ($years as $y)
+                                        @if ($current_year->id_year == $y->id_year)
+                                            <option value='{"id_year":"{{$y->id_year}}","year":"{{$y->year}}"}' selected>{{$y->year}}</option>    
+                                        @else
+                                            <option value='{"id_year":"{{$y->id_year}}","year":"{{$y->year}}"}'>{{$y->year}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <div class="col-md-6 offset-md-4">
                                 <div class="form-check">
                                 </div>

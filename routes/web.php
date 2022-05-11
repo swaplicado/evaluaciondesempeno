@@ -12,10 +12,12 @@
 */
 
 Route::get('/', function () {
-    return view('auth.login');
+    // return view('auth.login');
+    return redirect(route('login'));
 });
 
 Auth::routes();
+Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/home', 'HomeController@index')->name('home');
 

@@ -28,7 +28,13 @@
                             
                         <select class="form-control" id="anio" name="anio" required>
                             <option value="">Seleccione año</option>
-                            <option value="1" selected>2021</option>   
+                            @foreach ($years as $y)
+                                @if ($y->id_year == $id_year)
+                                    <option value="{{$y->id_year}}" selected>{{$y->year}}</option>
+                                @else
+                                    <option value="{{$y->id_year}}">{{$y->year}}</option>
+                                @endif
+                            @endforeach
                         </select>
                     </div>
 

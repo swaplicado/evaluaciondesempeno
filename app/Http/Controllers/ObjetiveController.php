@@ -23,9 +23,9 @@ class ObjetiveController extends Controller
      */
     public function index()
     {
-        $year = 1;
+        // $year = 1;
         $user = auth()->id();
-        $evaluacion = Evaluation::where('is_deleted',0)->where('user_id',$user)->where('year_id',$year)->OrderBy('version','DESC')->get();
+        $evaluacion = Evaluation::where('is_deleted',0)->where('user_id',$user)->where('year_id',session()->get('id_year'))->OrderBy('version','DESC')->get();
 
         $evaluacion->each(function($datas){
             $datas->eval_status;

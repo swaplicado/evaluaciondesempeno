@@ -31,10 +31,9 @@ class assigntEvalController extends Controller
     public function storage(Request $request){
         try {
             DB::transaction(function () use ($request) {
-                $year = Year::where([['year', date('Y')],['is_deleted',0]])->value('id_year');
                 foreach($request->evaluando as $evaluado){
                     $eval = Evaluation::create([
-                        'year_id' => $year,
+                        'year_id' => session()->get('id_year'),
                         'user_id' => $evaluado,
                         'version' => 1,
                         'eval_user_id' => $request->evaluador,

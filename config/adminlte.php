@@ -243,7 +243,7 @@ return [
             'can'  => 'manage-blog',
         ],
         [
-            'header' => 'Evaluación Desempeño 2021',
+            'header' => '',
         ],
         [
             'text' => 'Mis objetivos',
