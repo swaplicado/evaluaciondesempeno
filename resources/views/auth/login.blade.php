@@ -42,7 +42,7 @@
                         <div class="form-group row">
                             <label for="year" class="col-md-4 col-form-label text-md-right">Año evaluación</label>
                             <div class="col-md-6">
-                                <select class="form-control" name="year" required>
+                                <select class="form-control @error('year') is-invalid @enderror" name="year" required>
                                     @foreach ($years as $y)
                                         @if ($current_year->id_year == $y->id_year)
                                             <option value='{"id_year":"{{$y->id_year}}","year":"{{$y->year}}"}' selected>{{$y->year}}</option>    
@@ -51,6 +51,12 @@
                                         @endif
                                     @endforeach
                                 </select>
+
+                                @error('year')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                         </div>
 

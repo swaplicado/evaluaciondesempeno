@@ -31,6 +31,10 @@ class ObjetiveController extends Controller
             $datas->eval_status;
         });
 
+        if(is_null($evaluacion) || count($evaluacion) < 1){
+            return redirect()->back()->with(['message' => 'No tiene objetivos para el año '.session()->get('year'), 'icon' => 'error']);;
+        }
+
         $datas = Objetive::where('eval_id',$evaluacion[0]->id_eval)->where('is_deleted',0)->get();
 
         $datas->each(function($data){

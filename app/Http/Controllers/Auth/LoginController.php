@@ -62,8 +62,22 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
         if (Auth::attempt(['name' => $request->name, 'password' => $request->password])) {
-            session(['id_year' => $values->id_year, 'year' => $values->year]);
-            return redirect()->intended('home');
+            $existEval = \DB::table('evals')
+                            ->where([
+                                ['user_id',Auth()->user()->id],
+                                ['year_id',$values->id_year],
+                                ['is_deleted',0]
+                                ])
+                            ->first();
+                            
+            if(is_null($existEval)){
+                Auth::logout();
+                // return $this->sendFailedLoginResponse($request);
+                return redirect('login')->withErrors(['year' => ['No existen evaluaciones para el año seleccionado.']]);
+            }else{
+                session(['id_year' => $values->id_year, 'year' => $values->year]);
+                return redirect()->intended('home');
+            }
         } else {
             return $this->sendFailedLoginResponse($request);
         }

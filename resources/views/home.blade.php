@@ -104,5 +104,16 @@
 @stop
 
 @section('js')
-    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if(session('message'))
+     <script>
+         msg = "<?php echo session('message'); ?>";
+         myIcon = "<?php echo session('icon'); ?>";
+
+         Swal.fire({
+             icon: myIcon,
+             title: msg
+         });
+     </script>
+ @endif
 @stop
