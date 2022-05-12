@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -52,6 +53,15 @@ class User extends Authenticatable
 
     public function eval_status_log(){
         return $this->hasMany('App\Models\Eval_status_log');    
+    }
+
+    public function is_Admin(){
+        $rol = \DB::table('user_rol')->where('user_id', auth()->user()->id)->value('rol_id');
+        if($rol == 1){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function adminlte_desc(){

@@ -70,7 +70,7 @@ class LoginController extends Controller
                                 ])
                             ->first();
                             
-            if(is_null($existEval)){
+            if(is_null($existEval) && !(auth()->user()->is_Admin())){
                 Auth::logout();
                 // return $this->sendFailedLoginResponse($request);
                 return redirect('login')->withErrors(['year' => ['No existen evaluaciones para el año seleccionado.']]);
