@@ -298,6 +298,12 @@ return [
                     'icon' => 'fas fa-fw',
                     'can' => 'isAdmin',
                 ],
+                [
+                    'text' => 'Años evaluación',
+                    'url' => 'evalYears',
+                    'icon' => 'fas fa-fw',
+                    'can' => 'isAdmin',
+                ],
             ],
         ],
         [

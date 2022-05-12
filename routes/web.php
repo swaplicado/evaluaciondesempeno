@@ -58,4 +58,10 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('assigntEval','assigntEvalController@index')->name('assignt_eval');
     Route::post('assigntEval/set','assigntEvalController@storage')->name('assignt_eval_save');
+
+/* Crear año */
+
+    Route::get('evalYears','evalYearsController@index')->name('evalYears');
+    Route::post('evalYear/set','evalYearsController@store')->name('evalYear_save');
+    Route::post('evalYear/status','evalYearsController@update')->name('evalYear_update');
 });
