@@ -41,10 +41,10 @@
             <div class="col-md-12 col-md-offset-1">
                 <label style = "float: left; height: 100%;">Selecciona año:</label>
                 <div class="row">
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <input type="text" class="yearpicker" value="" name="year">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <button type="button" class="btn btn-primary" onclick="this.form.submit(); this.disabled=true;">pasar a calendario</button>
                     </div>
                 </div>
