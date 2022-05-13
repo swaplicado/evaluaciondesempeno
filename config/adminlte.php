@@ -291,6 +291,7 @@ return [
         [
             'text'    => 'Configuración',
             'icon' => 'fas fa-fw fa-cog ',
+            'can' => 'isAdmin',
             'submenu' => [
                 [
                     'text' => 'Asignar evaluadores',

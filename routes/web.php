@@ -64,4 +64,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('evalYears','evalYearsController@index')->name('evalYears');
     Route::post('evalYear/set','evalYearsController@store')->name('evalYear_save');
     Route::post('evalYear/status','evalYearsController@update')->name('evalYear_update');
+
+/* Cambiar año */
+    Route::post('changeYear', 'evalYearsController@change_year')->name('change_year');
 });

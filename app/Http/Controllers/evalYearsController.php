@@ -120,4 +120,29 @@ class evalYearsController extends Controller
     {
         //
     }
+
+    public function change_year(Request $request){
+        $existEval = \DB::table('evals')
+                            ->where([
+                                ['user_id',Auth()->user()->id],
+                                ['year_id',$request->year],
+                                ['is_deleted',0]
+                                ])
+                            ->first();
+
+        $year = \DB::table('config_years')->where([['is_deleted',0],['id_year',$request->year]])->first();
+
+        if(is_null($year)){
+            $allYears = \DB::table('config_years')->where('is_deleted',0)->select('id_year','year','status_id')->get();
+            session()->put('allYears', $allYears);
+            return redirect(route('home'))->with(['message' => 'No existen el año seleccionado', 'icon' => 'error']);
+        }else if(is_null($existEval) && !(auth()->user()->is_Admin())){
+            return redirect(route('home'))->with(['message' => 'No existen evaluaciones para el año '.$year->year, 'icon' => 'error']);
+        }else{
+            session()->put('id_year', $year->id_year);
+            session()->put('year', $year->year);
+            session()->put('status_year', $year->status_id);
+            return redirect(route('home'))->with(['message' => 'Se cambio al año de evaluación '.$year->year, 'icon' => 'success']);
+        }
+    }
 }

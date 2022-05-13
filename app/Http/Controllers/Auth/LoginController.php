@@ -75,7 +75,9 @@ class LoginController extends Controller
                 // return $this->sendFailedLoginResponse($request);
                 return redirect('login')->withErrors(['year' => ['No existen evaluaciones para el año seleccionado.']]);
             }else{
-                session(['id_year' => $values->id_year, 'year' => $values->year]);
+                $status = \DB::table('config_years')->where([['is_deleted',0],['id_year',$values->id_year]])->value('status_id');
+                $allYears = \DB::table('config_years')->where('is_deleted',0)->select('id_year','year','status_id')->get();
+                session(['id_year' => $values->id_year, 'year' => $values->year, 'status_year' => $status, 'allYears' => $allYears]);
                 return redirect()->intended('home');
             }
         } else {

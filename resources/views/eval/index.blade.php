@@ -19,22 +19,22 @@
                 
                 @switch($evaluacion[0]->eval_status_id)
                     @case(1)
-                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear">
+                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success check_year" id="crear" name="crear">
                             <i class="fa fa-fw fa-plus-circle"></i> Nuevo
                         </button>
                         @break
                     @case(2)
-                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear" disabled="disabled">
+                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success check_year" id="crear" name="crear" disabled="disabled">
                             <i class="fa fa-fw fa-plus-circle"></i> Nuevo
                         </button>
                         @break
                     @case(3)
-                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear" disabled="disabled">
+                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success check_year" id="crear" name="crear" disabled="disabled">
                             <i class="fa fa-fw fa-plus-circle"></i> Nuevo
                         </button>
                         @break
                     @case(4)
-                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success" id="crear" name="crear" disabled="disabled">
+                        <button onclick="window.location.href='{{route('crear_objetivo', ['id' => $evaluacion[0]->id_eval])}}'" class="btn btn-success check_year" id="crear" name="crear" disabled="disabled">
                             <i class="fa fa-fw fa-plus-circle"></i> Nuevo
                         </button>
                         @break
@@ -42,7 +42,7 @@
                         
                 @endswitch
             @else
-                <button onclick="window.location.href='{{route('crear_objetivo')}}'" class="btn btn-success" id="crear" name="crear">
+                <button onclick="window.location.href='{{route('crear_objetivo')}}'" class="btn btn-success check_year" id="crear" name="crear">
                     <i class="fa fa-fw fa-plus-circle"></i> Nuevo
                 </button>
                 
@@ -75,10 +75,10 @@
                             @endif
                             <td>
                                 @if ( $evaluacion[0]->eval_status_id == 1 )
-                                    <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary" id="edicion" title="Modificar este registro">
+                                    <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary check_year" id="edicion" title="Modificar este registro">
                                         <i class="fa fa-fw fa-wrench"></i>
                                     </a>
-                                    <form action="{{route('eliminar_objetivo', ['id' => $data->id_objetive])}}" class="d-inline form-eliminar" method="POST">
+                                    <form action="{{route('eliminar_objetivo', ['id' => $data->id_objetive])}}" class="d-inline form-eliminar check_year" method="POST">
                                         @csrf @method("delete")
                                         <button type="submit" class="btn btn-primary" id="eliminacion" title="Eliminar este registro">
                                             <i class="fa fa-fw fa-trash"></i>
@@ -117,17 +117,17 @@
 
             @switch($evaluacion[0]->eval_status_id)
                     @case(1)
-                        <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar">
+                        <button type="button" class="btn btn-warning float-right check_year" onclick="agregar()" id="enviar" name="enviar">
                             <i class="fa fa-fw fa-share"></i> Enviar a evaluador
                         </button>
                         @break
                     @case(2)
-                        <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar" disabled="disabled">
+                        <button type="button" class="btn btn-warning float-right check_year" onclick="agregar()" id="enviar" name="enviar" disabled="disabled">
                             <i class="fa fa-fw fa-share"></i> Enviar a evaluador
                         </button>
                         @break
                     @case(3)
-                        <button type="button" class="btn btn-warning float-right" onclick="agregar()" id="enviar" name="enviar" disabled="disabled">
+                        <button type="button" class="btn btn-warning float-right check_year" onclick="agregar()" id="enviar" name="enviar" disabled="disabled">
                             <i class="fa fa-fw fa-share"></i> Enviar a evaluador
                         </button>
                         @break

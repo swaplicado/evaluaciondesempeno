@@ -51,6 +51,9 @@ class ObjetiveController extends Controller
      */
     public function create($id)
     {
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+        }
         $datas = Objetive::where('eval_id',$id)->where('is_deleted',0)->get();
         $ponderacion = 0;
         for($i = 0 ; count($datas) > $i ; $i++){
@@ -69,6 +72,9 @@ class ObjetiveController extends Controller
      */
     public function store(Request $request)
     {
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+        }
         $objetive = new Objetive();
         $objetive->name = $request->name;
         $objetive->eval_id = $request->id;
@@ -103,6 +109,9 @@ class ObjetiveController extends Controller
      */
     public function edit($id)
     {
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+        }
         $objetivo = Objetive::findOrFail($id);
         $datas = Objetive::where('eval_id',$objetivo->eval_id)->where('is_deleted',0)->get();
         $ponderacion = 0;
@@ -124,6 +133,9 @@ class ObjetiveController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+        }
         $objetivo = Objetive::findOrFail($id);
         $objetivo->name = $request->name;
         $objetivo->activities = $request->activities;
@@ -145,7 +157,9 @@ class ObjetiveController extends Controller
      */
     public function destroy($id)
     {
-        
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+        }
             $indicator = Objetive::find($id);
             $indicator->is_deleted = 1;
             $indicator->save();
@@ -153,6 +167,9 @@ class ObjetiveController extends Controller
     }
 
     public function send_to_aprove(Request $request){
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            abort();
+        }
         $evaluacion = Evaluation::findOrFail($request->evaluacion);
         $evaluacion->eval_status_id = 2;
         $evaluacion->updated_by = auth()->id();
@@ -219,7 +236,9 @@ class ObjetiveController extends Controller
     }
 
     public function refuse_evaluation(Request $request){
-
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            abort();
+        }
         $evaluacion = Evaluation::findOrFail($request->id_evaluacion);
 
         //crear la nueva versión de la evaluación
@@ -271,6 +290,9 @@ class ObjetiveController extends Controller
     }
 
     public function aprove_score(Request $request){
+        if(auth()->user()->check_year(session()->get('id_year'))){
+            abort();
+        }
         $evaluacion = Evaluation::find($request->id_empleado);
         $evaluacion->eval_status_id = 3;
         $evaluacion->updated_by = auth()->id();

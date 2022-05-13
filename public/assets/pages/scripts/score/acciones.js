@@ -82,6 +82,14 @@ function aprobar(id_eval) {
                 $(irecalif).attr('disabled', true);
 
             },
+            error: function(data){
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'El año esta cerrado',
+                    allowOutsideClick: false
+                });
+                window.location.reload(true);
+            }
         });
     }
 }
@@ -140,6 +148,14 @@ function rechazar(id_eval) {
 
 
         },
+        error: function(data){
+            Swal.fire({
+                icon: 'warning',
+                text: 'El año esta cerrado',
+                allowOutsideClick: false
+            });
+            window.location.reload(true);
+        }
     });
 }
 

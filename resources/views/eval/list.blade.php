@@ -59,7 +59,6 @@
                                                     <p class="card-text"><b>Calificación ponderada:</b> <input type="text" disabled id="calificacion_pon{{$objetive->id_obj}}" value="{{ $ponderacion }}"></p>
                                                     <input type="hidden" id="calificacion_anterior{{$objetive->id_obj}}" name="calificacion_anterior{{$objetive->id_obj}}" value="{{$objetive->score_id}}">
                                                 @endif
-                                                
                                             </div>
                                         </div>
                                     </div>
@@ -77,22 +76,22 @@
                                                 <p class="card-text">Evaluación final: <input class='form-control' type="number" value="0" id="total{{$eval->eval_id}}" name="total{{$eval->eval_id}}" readonly></p>
                                                 <p class="card-text">Evaluación obtenida:<input class="form-control" type="text" value="Sin calificar" id="califnombre{{$eval->eval_id}}" readonly></p>
                                                 <p class="card-text">Comentarios: <input class='form-control' type="text" id="comentarios{{$eval->eval_id}}" name="comentarios{{$eval->eval_id}}" value="{{$eval->comment}}" readonly> </p>
-                                                <button type="button" class="btn btn-info" onclick="recalif({{$eval->eval_id}})" id="ini{{$eval->eval_id}}" name="ini{{$eval->eval_id}}">
+                                                <button type="button" class="btn btn-info check_year" onclick="recalif({{$eval->eval_id}})" id="ini{{$eval->eval_id}}" name="ini{{$eval->eval_id}}">
                                                     Iniciar evaluación
                                                 </button>
-                                                <button type="button" class="btn btn-success" onclick="aprobar({{$eval->eval_id}})" id="apro{{$eval->eval_id}}" name="apro{{$eval->eval_id}}" disabled>
+                                                <button type="button" class="btn btn-success check_year" onclick="aprobar({{$eval->eval_id}})" id="apro{{$eval->eval_id}}" name="apro{{$eval->eval_id}}" disabled>
                                                     Terminar evaluación
                                                 </button>
-                                                <button type="button" class="btn btn-danger" onclick="desblo({{$eval->eval_id}})" id="desbloquear{{$eval->eval_id}}" name="desbloquear{{$eval->eval_id}}">
+                                                <button type="button" class="btn btn-danger check_year" onclick="desblo({{$eval->eval_id}})" id="desbloquear{{$eval->eval_id}}" name="desbloquear{{$eval->eval_id}}">
                                                     Rechazar objetivos
                                                 </button>
-                                                <button type="button" class="btn btn-danger" onclick="rechazar({{$eval->eval_id}})" id="recha{{$eval->eval_id}}" name="recha{{$eval->eval_id}}" disabled>
+                                                <button type="button" class="btn btn-danger check_year" onclick="rechazar({{$eval->eval_id}})" id="recha{{$eval->eval_id}}" name="recha{{$eval->eval_id}}" disabled>
                                                     Regresar objetivos
                                                 </button>
-                                                <button type="button" class="btn btn-warning" onclick="recalif({{$eval->eval_id}})" id="recalif{{$eval->eval_id}}" name="recalif{{$eval->eval_id}}" disabled>
+                                                <button type="button" class="btn btn-warning check_year" onclick="recalif({{$eval->eval_id}})" id="recalif{{$eval->eval_id}}" name="recalif{{$eval->eval_id}}" disabled>
                                                     Volver a evaluar
                                                 </button> 
-                                                <button type="button" class="btn btn-secondary" onclick="can({{$eval->eval_id}})" id="cancel{{$eval->eval_id}}" name="cancel{{$eval->eval_id}}"disabled>
+                                                <button type="button" class="btn btn-secondary check_year" onclick="can({{$eval->eval_id}})" id="cancel{{$eval->eval_id}}" name="cancel{{$eval->eval_id}}"disabled>
                                                     Abortar evaluación
                                                 </button> 
                                                 <input type="hidden" id="havescore{{$eval->eval_id}}" name="havescore{{$eval->eval_id}}" value="0">
@@ -109,22 +108,22 @@
                                                     <p class="card-text">Evaluación obtenida:<input class="form-control" type="text" value="{{$scoreName[3]->name}}" id="califnombre{{$eval->eval_id}}" readonly></p>
                                                 @endif
                                                 <p class="card-text">Comentarios: <input class='form-control' type="text" id="comentarios{{$eval->eval_id}}" name="comentarios{{$eval->eval_id}}" value="{{$eval->comment}}" readonly>  </p>
-                                                <button type="button" class="btn btn-info" onclick="recalif({{$eval->eval_id}})" id="ini{{$eval->eval_id}}" name="ini{{$eval->eval_id}}" disabled>
+                                                <button type="button" class="btn btn-info check_year" onclick="recalif({{$eval->eval_id}})" id="ini{{$eval->eval_id}}" name="ini{{$eval->eval_id}}" disabled>
                                                     Iniciar evaluación
                                                 </button>
-                                                <button type="button" class="btn btn-success" onclick="aprobar({{$eval->eval_id}})" id="apro{{$eval->eval_id}}" name="apro{{$eval->eval_id}}" disabled>
+                                                <button type="button" class="btn btn-success check_year" onclick="aprobar({{$eval->eval_id}})" id="apro{{$eval->eval_id}}" name="apro{{$eval->eval_id}}" disabled>
                                                     Terminar evaluación
                                                 </button>
-                                                <button type="button" class="btn btn-danger" onclick="desblo({{$eval->eval_id}})" id="desbloquear{{$eval->eval_id}}" name="desbloquear{{$eval->eval_id}}">
+                                                <button type="button" class="btn btn-danger check_year" onclick="desblo({{$eval->eval_id}})" id="desbloquear{{$eval->eval_id}}" name="desbloquear{{$eval->eval_id}}">
                                                     Rechazar objetivos
                                                 </button>
-                                                <button type="button" class="btn btn-danger" onclick="rechazar({{$eval->eval_id}})" id="recha{{$eval->eval_id}}" name="recha{{$eval->eval_id}}" disabled>
+                                                <button type="button" class="btn btn-danger check_year" onclick="rechazar({{$eval->eval_id}})" id="recha{{$eval->eval_id}}" name="recha{{$eval->eval_id}}" disabled>
                                                     Regresar objetivos
                                                 </button>
-                                                <button type="button" class="btn btn-warning" onclick="recalif({{$eval->eval_id}})" id="recalif{{$eval->eval_id}}" name="recalif{{$eval->eval_id}}">
+                                                <button type="button" class="btn btn-warning check_year" onclick="recalif({{$eval->eval_id}})" id="recalif{{$eval->eval_id}}" name="recalif{{$eval->eval_id}}">
                                                     Volver a evaluar
                                                 </button> 
-                                                <button type="button" class="btn btn-secondary" onclick="can({{$eval->eval_id}})" id="cancel{{$eval->eval_id}}" name="cancel{{$eval->eval_id}}"disabled>
+                                                <button type="button" class="btn btn-secondary check_year" onclick="can({{$eval->eval_id}})" id="cancel{{$eval->eval_id}}" name="cancel{{$eval->eval_id}}"disabled>
                                                     Abortar evaluación
                                                 </button> 
                                                 <input type="hidden" id="havescore{{$eval->eval_id}}" name="havescore{{$eval->eval_id}}" value="1">
