@@ -18,6 +18,7 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
+Route::get('/logout', 'Auth\LoginController@logout')->name('MyLogout');
 Route::group(['middleware' => ['auth']], function() {
     Route::get('/home', 'HomeController@index')->name('home');
 

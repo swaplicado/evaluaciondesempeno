@@ -3,7 +3,7 @@
 @section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
-    <h1>Asignar evaluador</h1>
+    <h1>Años evaluación</h1>
 @stop
 @section('content')
 <div class="card" id="evalYears">
@@ -21,7 +21,6 @@
                     @csrf
                     <div class="modal-body">
                         <select class="form-control" name="status">
-                            <option value="1" :selected="1 == Status">Nuevo</option>
                             <option value="2" :selected="2 == Status">Abierto</option>
                             <option value="3" :selected="3 == Status">Cerrado</option>
                         </select>

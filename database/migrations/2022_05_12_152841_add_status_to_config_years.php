@@ -14,7 +14,7 @@ class AddStatusToConfigYears extends Migration
     public function up()
     {
         Schema::table('config_years', function (Blueprint $table) {
-            $table->bigInteger('status_id')->unsigned()->after('year')->default(1);
+            $table->bigInteger('status_id')->unsigned()->after('year')->default(2);
 
             $table->foreign('status_id')->references('id_status')->on('config_status');
         });
