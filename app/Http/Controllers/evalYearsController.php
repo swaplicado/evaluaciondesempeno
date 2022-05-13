@@ -107,7 +107,7 @@ class evalYearsController extends Controller
             $icon = "error";
         }
 
-        return redirect('evalYears')->with(['message' => $msg, 'icon' => $icon]);
+        return redirect(route('evalYears'))->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
