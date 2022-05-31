@@ -305,6 +305,12 @@ return [
                     'icon' => 'fas fa-fw',
                     'can' => 'isAdmin',
                 ],
+                [
+                    'text' => 'Registrar usuarios',
+                    'url' => 'users/create',
+                    'icon' => 'fas fa-fw',
+                    'can' => 'isAdmin',
+                ],
             ],
         ],
         [

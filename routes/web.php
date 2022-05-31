@@ -68,4 +68,9 @@ Route::group(['middleware' => ['auth']], function() {
 
 /* Cambiar año */
     Route::post('changeYear', 'evalYearsController@change_year')->name('change_year');
+
+/* Registrar usuarios */
+
+    Route::get('/users/create', 'UserController@create')->name('crear_user');
+    Route::post('/users/store', 'UserController@store')->name('guardar_user');
 });

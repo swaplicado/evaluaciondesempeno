@@ -18,7 +18,16 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'num_employee',
+        'department_id',
+        'job_id',
+        'password',
+        'do_evaluation',
+        'firt_name',
+        'last_name',
+        'full_name'
     ];
 
     /**
@@ -76,5 +85,9 @@ class User extends Authenticatable
     public function adminlte_desc(){
 
         return $this->department->name. ' - '. $this->job->name;
+    }
+    
+    public function roles() {
+        return $this->belongsToMany(Role::class, 'user_rol', 'user_id', 'rol_id');
     }
 }
