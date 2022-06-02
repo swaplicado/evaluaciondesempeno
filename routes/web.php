@@ -73,4 +73,9 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::get('/users/create', 'UserController@create')->name('crear_user');
     Route::post('/users/store', 'UserController@store')->name('guardar_user');
+
+/* Fecha de cierre */
+
+    Route::get('/closeDate', 'closeDate@index')->name('close_date');
+    Route::post('/closeDate/edit', 'closeDate@store')->name('close_date_edit');
 });

@@ -306,6 +306,12 @@ return [
                     'can' => 'isAdmin',
                 ],
                 [
+                    'text' => 'Fecha de cierre',
+                    'url' => 'closeDate',
+                    'icon' => 'fas fa-fw',
+                    'can' => 'isAdmin',
+                ],
+                [
                     'text' => 'Registrar usuarios',
                     'url' => 'users/create',
                     'icon' => 'fas fa-fw',
