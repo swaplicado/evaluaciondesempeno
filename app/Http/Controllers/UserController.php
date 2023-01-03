@@ -98,7 +98,7 @@ class UserController extends Controller
             'numEmpl' => ['required', 'integer', 'unique:users,num_employee'],
             'dept' => ['required'],
             'job' => ['required'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed']
         ]);
 
