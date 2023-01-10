@@ -129,7 +129,8 @@ class ReportController extends Controller
     }
 
     public function control_report_gen(Request $request){
-        $employees_id = SEvaluated::getEmployees( $request->user_id, $request->type ); 
+        $year = $request->anio;
+        $employees_id = SEvaluated::getEmployees( $request->user_id, $request->type, $year ); 
         if($request->dept == 0){
 
             $employees = DB::table('evals')
@@ -140,7 +141,7 @@ class ReportController extends Controller
                             ->whereIn('evals.user_id',$employees_id)
                             ->where('evals.is_deleted',0)
                             ->where('colaboradores.do_evaluation',1)
-                            ->where('year_id',1)
+                            ->where('year_id',$year)
                             ->orderBy('evals.user_id')
                             ->orderBy('evals.version','DESC')
                             ->select('evals.id_eval AS ideval','colaboradores.full_name AS colaborador', 'colaboradores.num_employee AS numero', 'evaluador.full_name AS evaluador', 'ext_departments.name AS department', 'sys_eval_status.id_eval_status AS status', 'evals.score_id AS score','evals.version AS version')
