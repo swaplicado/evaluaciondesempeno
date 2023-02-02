@@ -36,5 +36,11 @@ class AppServiceProvider extends ServiceProvider
         \Gate::define('doEvaluation', function($user){
             return $user->do_evaluation == 1;
         });
+
+        \Gate::define('isDirector', function($user){
+            $rol = DB::table('user_rol')->where('user_id',$user->id)->get();
+
+            return $rol[0]->rol_id == 3;  
+        });
     }
 }

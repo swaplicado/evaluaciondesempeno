@@ -253,8 +253,14 @@ return [
         ],
         [
             'text' => 'Objetivos colab. dir.',
-            'url'  => 'objetive/list',
+            'url'  => 'objetive/list/1',
             'icon' => 'fas fa-fw fa-users',
+        ],
+        [
+            'text' => 'Objetivos todos colab.',
+            'url'  => 'objetive/list/2',
+            'icon' => 'fas fa-fw fa-users',
+            'can' => 'isDirector'
         ],
         [
             'text'    => 'Seguimiento',

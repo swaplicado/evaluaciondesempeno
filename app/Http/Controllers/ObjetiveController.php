@@ -186,11 +186,22 @@ class ObjetiveController extends Controller
         return response()->json(array($data));   
     }
     
-    public function list_objetives(Request $request){
+    public function list_objetives(Request $request,$id){
         $id_user = auth()->id();
         $user = User::findOrFail($id_user);
+        if($id == 1){
+            $isDirector = false;
+        }else{
+            $isDirector = $user->is_Director();
+        }
+       
         $year = session()->get('id_year');
-        $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id." AND year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0");  
+        if($isDirector == true){
+            $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name");
+        }else{
+            $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id." AND year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name");
+        }
+         
         
         $objetiveArray = [];
         $evalArray = [];
@@ -232,7 +243,7 @@ class ObjetiveController extends Controller
 
         $scoreName = Score::where('is_deleted','0')->orderBy('id_score','ASC')->get();
 
-        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName);
+        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName)->with('isDirector',$isDirector);
         
     }
 

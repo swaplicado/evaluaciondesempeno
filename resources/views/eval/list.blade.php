@@ -3,7 +3,12 @@
 @section('title', 'Evaluación Desempeño 2021')
 
 @section('content_header')
-    <h1>Objetivos de mis colaboradores directos</h1>
+    @if ($isDirector == true)
+        <h1>Objetivos de mis colaboradores</h1>
+    @else
+        <h1>Objetivos de mis colaboradores directos</h1>
+    @endif
+    
 @stop
 
 @section('content')

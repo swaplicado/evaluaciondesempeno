@@ -66,11 +66,20 @@ class User extends Authenticatable
 
     public function is_Admin(){
         $rol = \DB::table('user_rol')->where('user_id', auth()->user()->id)->value('rol_id');
-        if($rol == 1){
+        if($rol == 1 || $rol == 3){
             return true;
         }else{
             return false;
         }
+    }
+
+    public function is_Director(){
+        $rol = \DB::table('user_rol')->where('user_id', auth()->user()->id)->value('rol_id');  
+        if($rol == 3){
+            return true;
+        }else{
+            return false;
+        }      
     }
 
     public function check_year($id_year){
