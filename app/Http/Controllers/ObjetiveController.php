@@ -170,7 +170,26 @@ class ObjetiveController extends Controller
         if(auth()->user()->check_year(session()->get('id_year'))){
             abort();
         }
+        DB::beginTransaction();
         $evaluacion = Evaluation::findOrFail($request->evaluacion);
+
+        $lObjectives = Objetive::where('eval_id', $evaluacion->id_eval)
+                                ->where('is_deleted', 0)
+                                ->get();
+
+        $lObjectivesNoComment = [];
+        foreach ($lObjectives as $objective) {
+            if(!preg_match('/[a-zA-Z]/', $objective->comment)){
+                array_push($lObjectivesNoComment, $objective->name);
+            }
+        }
+        if(count($lObjectivesNoComment) > 0){
+            http_response_code(400);
+            $response = array("error" => "Los siguientes objetivos no tienen comentario:", "objectives" => $lObjectivesNoComment);
+            echo json_encode($response);
+            die();
+        }
+
         $evaluacion->eval_status_id = 2;
         $evaluacion->updated_by = auth()->id();
         $evaluacion->save();
@@ -183,6 +202,8 @@ class ObjetiveController extends Controller
         $status_log->updated_by = auth()->id();
         $status_log->save();
         $data = 1;
+
+        DB::commit();
         return response()->json(array($data));   
     }
     

@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación Desempeño 2021')
+@section('title', 'Evaluación Desempeño '.session()->get('year'))
 
 @section('content_header')
     <h1>Mis objetivos de negocio (QUÉ)</h1>
@@ -29,8 +29,8 @@
                 <input type="number" name="weighing" id="weighing" class="form-control" step="0.01" min="0" max="100" onchange="ponderacion(this.value)" required/>
             </div>
             <div class="form-group">
-                <label for="unit_measurement" class="form-label">Comentarios:*</label>
-                <textarea rows="5" cols="60" name="comment" id="comment" class="form-control" required></textarea>
+                <label for="unit_measurement" class="form-label">Comentarios:</label>
+                <textarea rows="5" cols="60" name="comment" id="comment" class="form-control"></textarea>
             </div>
            
     </div>

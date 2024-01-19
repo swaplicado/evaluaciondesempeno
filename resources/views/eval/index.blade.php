@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación Desempeño 2021')
+@section('title', 'Evaluación Desempeño '.session()->get('year'))
 
 @section('content_header')
     <h1>Mis objetivos</h1>
@@ -86,6 +86,9 @@
                                     </form>
                                 @endif
                             </td>
+                            <td>
+                                {{$data->id_objetive}}
+                            </td>
                             <?php 
                             $ponderacion = $ponderacion + $data->weighing; 
                             ?>
@@ -139,8 +142,16 @@
 
 @section('css')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
-    
-    
+    <style>
+        .buttonToSwal {
+            padding: 0;
+        }
+        .custom-list {
+            white-space: nowrap; /* Evitar el salto de línea */
+            overflow: hidden; /* Ocultar el contenido que desborda */
+            text-overflow: ellipsis; /* Mostrar puntos suspensivos para el texto recortado */
+        }
+    </style>
 @stop
 
 @section('js')
@@ -182,9 +193,18 @@
                 [ 10, 25, 50, 100, -1 ],
                 [ 'Mostrar 10', 'Mostrar 25', 'Mostrar 50', 'Mostrar 100', 'Mostrar todo' ]
             ],
+            "columnDefs": [
+                {
+                    "targets": [5],
+                    "visible": false,
+                    "searchable": false,
+                    "orderable": false,
+                },
+            ]
         
             });
     } );
+    var routeEdit = <?php echo json_encode(route('editar_objetivo', ['id' => 'id'])) ?>;
    </script>
    <script src="{{asset("assets/pages/scripts/objetives/revision.js")}}" type="text/javascript"></script>
    <script src="{{asset("assets/pages/scripts/objetives/index.js")}}" type="text/javascript"></script>
