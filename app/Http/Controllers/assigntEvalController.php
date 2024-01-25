@@ -24,8 +24,9 @@ class assigntEvalController extends Controller
                     ->select('id','full_name')
                     ->orderBy('full_name')
                     ->get();
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
 
-        return view('assigntEval.index',['users' => $users]);
+        return view('assigntEval.index',['users' => $users])->with('year',$year[0]->year);
     }
 
     public function storage(Request $request){

@@ -123,9 +123,11 @@ class ReportController extends Controller
 
         //saca el año
         $years = Year::where('is_deleted',0)->get();
+
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
         
         return view('reports.control',['depatments' => $departments, 'type' => $type, 'id_user' => $id_user,
-        'id_year' => session()->get('id_year'), 'years' => $years]);
+        'id_year' => session()->get('id_year'), 'years' => $years])->with('year',$year[0]->year);
     }
 
     public function control_report_gen(Request $request){
@@ -248,7 +250,9 @@ class ReportController extends Controller
             
         }
 
-        return view('reports.controlgen')->with('employees',$employees)->with('employeesArray',$employeesArray)->with('type',$request->type);
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+
+        return view('reports.controlgen')->with('employees',$employees)->with('employeesArray',$employeesArray)->with('type',$request->type)->with('year',$year[0]->year);
     }
 
     public function evaluadores(){
@@ -262,6 +266,9 @@ class ReportController extends Controller
                             ->orderBy('eName.full_name')
                             ->get();
         
-        return view('reports.controlEvaluadores',['evaluadores' => $evaluadores]);
+        //$year = session()->get('id_year');
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        
+        return view('reports.controlEvaluadores',['evaluadores' => $evaluadores])->with('year',$year[0]->year);
     }
 }

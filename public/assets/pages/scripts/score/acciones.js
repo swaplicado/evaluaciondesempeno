@@ -3,7 +3,7 @@ function aprobar(id_eval) {
     var nombre = "comentarios";
     nombre = nombre.concat(id_eval);
     var comentarios = document.getElementById(nombre).value;
-    var anio = 2021;
+    var anio = 2023;
 
     // nombres para poder bloquear botones
     var icomentario = "#comentarios"
@@ -83,6 +83,7 @@ function aprobar(id_eval) {
 
             },
             error: function(data){
+                console.log(data);
                 Swal.fire({
                     icon: 'warning',
                     text: 'El año esta cerrado',
@@ -97,7 +98,7 @@ function aprobar(id_eval) {
 function rechazar(id_eval) {
     var nombre = "comentarios";
     nombre = nombre.concat(id_eval);
-    var anio = 2021;
+    var anio = 2023;
     var comentarios = document.getElementById(nombre).value;
 
     var icomentario = "#comentarios"

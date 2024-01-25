@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use DB;
 
 class closeDate extends Controller
 {
@@ -18,8 +19,9 @@ class closeDate extends Controller
         $fecha = $config->date;
         $limite = Carbon::parse($fecha)->endOfDay();
         $route = route('close_date_edit');
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
 
-        return view('closeDate.index', ['limite' => $limite, 'route' => $route]);
+        return view('closeDate.index', ['limite' => $limite, 'route' => $route])->with('year',$year[0]->year);
     }
 
     /**

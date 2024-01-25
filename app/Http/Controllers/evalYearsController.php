@@ -21,7 +21,8 @@ class evalYearsController extends Controller
                     ->where('cy.is_deleted',0)
                     ->orderBy('cy.year')
                     ->get();
-        return view('evalYears.index', ['years' => $years]);
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        return view('evalYears.index', ['years' => $years])->with('year',$year[0]->year);
     }
 
     /**

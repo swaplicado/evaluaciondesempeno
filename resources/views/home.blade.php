@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación Desempeño 2021')
+@section('title', 'Evaluación desempeño ' . $year)
 
 @section('content_header')
     <link rel="shortcut icon" href="{{ asset('favicons/icono.png') }}" />
@@ -40,7 +40,7 @@
     <ul>
         <li>Prioridad: Construir reputación en nuestras comunidades a nivel nacional y regional</li>
     </ul>
-    <p><b>Objetivo Organizacional 2022</b></p>
+    <p><b>Objetivo Organizacional {{$anio}}</b></p>
     <p>Impulsar el crecimiento rentable (EBITDA)</p>
     <p><b>Misión:</b></p>
     <p>Producir aceites especiales de origen vegetal, para satisfacer las necesidades especificas del mercado nacional e internacional, promoviendo el desarrollo de la agricultura nacional; cumpliendo las necesidades de nuestros colaboradores y otorgando rentabilidad a los accionistas.</p>
@@ -59,13 +59,13 @@
     <p>Capacidad de trabajar de forma integrada entre grupos y equipos de trabajo multidisciplinarios, a través de la cohesión de todos los recursos materiales y tecnológicos para conseguir  objetivos comunes a toda la organización, que tributen a una mayor generación de valor y por ende a un desempeño superior    </p>
     <p><b>6. Negociación:</b></p>
     <p>Es un proceso en el que varias partes interaccionan con el propósito de llegar a un acuerdo que implique la mejora en la gestión o la solución de un conflicto.</p>
-    <p><b>7. Formación de aprendizaje:</b></p>
+    <p><b>7. Formación y aprendizaje:</b></p>
     <p>Es el conocimiento que no se limita a los años de educación formal, sino que por el contrario, plantea que el aprendizaje debe darse permanentemente de acuerdo a situaciones o eventos nuevos que generen experiencia.</p>
     <p><b>8. Innovación:</b></p>
     <p>Se considerara como la creación o el mejoramiento de procesos, productos y servicios para ser comercializados, satisfaciendo los gustos y necesidades de los clientes, y obteniendo beneficios empresariales, con la finalidad de alcanzar un valor agregado siendo competitivos e impactar en la sociedad.</p>
     <p><b>9. Orientación a la calidad:</b></p>
     <p>Disposición de la organización para generar soluciones con un enfoque al cliente y de calidad total, tanto para los procesos como para los productos, mediante la integración de los sistemas de gestión empresarial, la búsqueda permanente de la disminución de las no conformidades y la generación de valor.</p>
-    <p><b>10. Foco en el cliente y en el consumidor:</b></p>
+    <p><b>10. Foco en el consumidor y cliente:</b></p>
     <p>El enfoque consiste en satisfacer las necesidades de los clientes, incluyendo también las expectativas:
         <ul>
             <li>Conocer con exactitud, quiénes son nuestros clientes</li>
@@ -75,7 +75,7 @@
         </ul>     
     </p>
     <p><b>Con qué me comprometo:</b></p>
-    <p>Con el apoyo de tu jefe inmediato, define 4 compromisos de tu puesto, coloca la ponderación correspondiente (Tiene que sumar 100%) y asegúrate que se encuentren alineados a la estrategia del área.</p>
+    <p>Con el apoyo de tu jefe inmediato, define al menos 4 objetivos de tu puesto, coloca la ponderación correspondiente (Tiene que sumar 100%) y asegúrate que se encuentren alineados a la estrategia del área.</p>
     <p><b>Este año tus objetivos son SIMple:</b></p>
     <ul>
         <li><b>(S)</b> Specific- Específicos- Responde a la pregunta <b>¿Qué, Cómo y Cuándo lo vas hacer?</b></li>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 
 class TutorialController extends Controller
 {
@@ -13,7 +14,8 @@ class TutorialController extends Controller
      */
     public function index()
     {
-        return view('tutorial.index');
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        return view('tutorial.index')->with('year',$year[0]->year);
     }
 
     /**

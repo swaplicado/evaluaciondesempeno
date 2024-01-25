@@ -83,11 +83,11 @@ class User extends Authenticatable
     }
 
     public function check_year($id_year){
-        $status = \DB::table('config_years')->where('id_year',$id_year)->value('status_id');
-        if($status == 3){
-            session()->put('status_year', 3);
-            return true;
-        }
+        // $status = \DB::table('config_years')->where('id_year',$id_year)->value('status_id');
+        // if($status == 3){
+        //     session()->put('status_year', 3);
+        //     return true;
+        // }
         return false;
     }
 

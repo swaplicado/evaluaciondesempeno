@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación Desempeño 2021')
+@section('title', 'Evaluación desempeño ' . $year)
 
 @section('content_header')
     <h1>Mis objetivos de negocio (QUÉ)</h1>
@@ -10,25 +10,26 @@
       resize: none;
     }
 </style>
+<link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 @section('content')
 <div class="card">
     <div class="card-body">
         <form action="{{route('actualizar_objetivo', ['id' => $objetivo->id_objetive])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
             @csrf @method("put")
             <div class="form-group">
-                <label for="name" class="form-label">Objetivo:*</label>
+                <label for="name" class="form-label">Objetivo:* <span title="Meta a alcanzar en tu área." class="bx bx-info-circle"></span></label>
                 <input type="text" name="name" id="name" class="form-control" value="{{$objetivo->name}}" required/>
             </div>
             <div class="form-group">
-                <label for="weighing" class="form-label">Ponderación:*</label>
-                <input type="number" name="weighing" id="weighing" class="form-control" step="0.01" min="0" max="100" value="{{$objetivo->weighing}}" onchange="ponderacion(this.value)" required/>
-            </div>
-            <div class="form-group">
-                <label for="description" class="form-label">Actividades*:</label>
+                <label for="description" class="form-label">Actividades:* <span title="Las actividades que realizarás para llegar al objetivo." class="bx bx-info-circle"></span></label>
                 <textarea rows="5" cols="60" name="activities" id="activities" class="form-control"  required>{{$objetivo->activities}}</textarea>
             </div>
             <div class="form-group">
-                <label for="unit_measurement" class="form-label">Comentarios:*</label>
+                <label for="weighing" class="form-label">Ponderación:* <span title="Porcentaje que se le dará al objetivo." class="bx bx-info-circle"></span></label>
+                <input type="number" name="weighing" id="weighing" class="form-control" step="0.01" min="0" max="100" value="{{$objetivo->weighing}}" onchange="ponderacion(this.value)" required/>
+            </div>
+            <div class="form-group">
+                <label for="unit_measurement" class="form-label">Comentarios:* <span title="Desde sugerencias o alguna complicación que hayas tenido, hasta oportunidades de mejora." class="bx bx-info-circle"></span></label>
                 <textarea rows="5" cols="60" name="comment" id="comment" class="form-control" required>{{$objetivo->comment}}</textarea>
             </div>
            

@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Dashboard')
+@section('title', 'Evaluación desempeño ' . $year)
 
 @section('content_header')
     <h1>Tutorial</h1>
