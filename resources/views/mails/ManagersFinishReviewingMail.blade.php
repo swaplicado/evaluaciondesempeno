@@ -16,13 +16,6 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <h3>Los supervisores:</h3>
-    <ul>
-        @foreach ($lEmployees as $emp)
-            <li>{{$emp}}</li>
-        @endforeach
-    </ul>
-    <br>
-    <h3>Terminaron de evaluar los objetivos</h3>
+    
 </body>
 </html>

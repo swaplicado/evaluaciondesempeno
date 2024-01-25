@@ -16,9 +16,9 @@ class ManagersFinishReviewingMail extends Mailable
      *
      * @return void
      */
-    public function __construct($lEmployees)
+    public function __construct()
     {
-        $this->lEmployees = $lEmployees;
+        
     }
 
     /**
@@ -31,7 +31,6 @@ class ManagersFinishReviewingMail extends Mailable
         $email = "adrian.aviles.swaplicado@gmail.com";
         return $this->from($email)
                         ->subject('Evaluación de desempeño')
-                        ->view('mails.ManagersFinishReviewingMail')
-                        ->with('lEmployees', $this->lEmployees);
+                        ->view('mails.ManagersFinishReviewingMail');
     }
 }

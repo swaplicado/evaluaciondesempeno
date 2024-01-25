@@ -14,6 +14,8 @@ use App\SUtils\SEval;
 use App\SUtils\SObjetive;
 use App\Models\Eval_score_log;
 use Illuminate\Support\Facades\Log;
+use App\Mail\ManagersFinishReviewingMail;
+use Illuminate\Support\Facades\Mail;
 
 class ObjetiveController extends Controller
 {
@@ -384,7 +386,23 @@ class ObjetiveController extends Controller
                 if(count($levels) > 0){
                     $sendEmail = ObjetiveController::check_complete_evals(auth()->id(),$levels);
                     if($sendEmail == 1){
-                        Log::info('Se enviará correo');   
+                        if(auth()->id() != 59){
+                            $evaluador = DB::table('evals as e')
+                                                ->leftjoin('users AS eName', 'eName.id', '=', 'e.eval_user_id')
+                                                ->leftjoin('users AS cName', 'cName.id', '=', 'e.user_id')
+                                                ->select('e.*','eName.full_name as eval_name','cName.full_name as col_name')
+                                                ->where('e.is_deleted',0)
+                                                ->where('e.year_id',session()->get('id_year'))
+                                                ->where('e.user_id',auth()->id())
+                                                ->orderBy('eName.full_name')
+                                                ->first();
+
+                            $user = DB::table('users')
+                                        ->where('id', $evaluador->eval_user_id)
+                                        ->first();
+
+                            Mail::to($user->email)->send(new ManagersFinishReviewingMail());
+                        }
                     }
                 }
             }
