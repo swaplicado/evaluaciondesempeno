@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación Desempeño 2021')
+@section('title', 'Evaluación desempeño ' . $year)
 
 @section('content_header')
     @if ($isDirector == true)
@@ -55,11 +55,11 @@
                                                 <p class="card-text"><b>Ponderación:</b> {{$objetive->weighing}} %</p> <input type="hidden" id="pon{{$objetive->id_obj}}" name="pon{{$objetive->id_obj}}" value="{{$objetive->weighing}}">
                                                 <p class="card-text"><b>Comentario:</b> {{$objetive->commentObj}} </p>
                                                 @if($objetive->score_id == null)
-                                                    <p class="card-text"><b>Calificación:</b> <select disabled id="calificacion_nueva{{$objetive->id_obj}}" onchange="evaluar({{$eval->eval_id.','.$objetive->id_obj}})"><option selected value="0">0 - Sin calificar</option> @foreach($scores as $score => $index) <option value="{{ $index }}"> {{$index.' - '.$score}}</option> @endforeach </select></p>
+                                                    <p class="card-text"><b>Calificación:*</b> <select disabled id="calificacion_nueva{{$objetive->id_obj}}" onchange="evaluar({{$eval->eval_id.','.$objetive->id_obj}})"><option selected value="0">0 - Sin calificar</option> @foreach($scores as $score => $index) <option value="{{ $index }}"> {{$index.' - '.$score}}</option> @endforeach </select></p>
                                                     <p class="card-text"><b>Calificación ponderada:</b> <input type="text" disabled id="calificacion_pon{{$objetive->id_obj}}" value="0.0"></p>
                                                     <input type="hidden" id="calificacion_anterior{{$objetive->id_obj}}" name="calificacion_anterior{{$objetive->id_obj}}" value="0">
                                                 @else
-                                                    <p class="card-text"><b>Calificación:</b> <select disabled id="calificacion_nueva{{$objetive->id_obj}}" onchange="evaluar({{$eval->eval_id.','.$objetive->id_obj}})"><option value="0">0 - Sin calificar</option> @foreach($scores as $score => $index) @if( $objetive->score_id == $index) <option selected value="{{ $index }}"> {{$index.' - '.$score}}</option> @else <option value="{{ $index }}"> {{$index.' - '.$score}}</option> @endif @endforeach </select></p>
+                                                    <p class="card-text"><b>Calificación:*</b> <select disabled id="calificacion_nueva{{$objetive->id_obj}}" onchange="evaluar({{$eval->eval_id.','.$objetive->id_obj}})"><option value="0">0 - Sin calificar</option> @foreach($scores as $score => $index) @if( $objetive->score_id == $index) <option selected value="{{ $index }}"> {{$index.' - '.$score}}</option> @else <option value="{{ $index }}"> {{$index.' - '.$score}}</option> @endif @endforeach </select></p>
                                                     <?php $ponderacion = $objetive->weighing / 100; $ponderacion = $ponderacion * $objetive->score_id; ?>
                                                     <p class="card-text"><b>Calificación ponderada:</b> <input type="text" disabled id="calificacion_pon{{$objetive->id_obj}}" value="{{ $ponderacion }}"></p>
                                                     <input type="hidden" id="calificacion_anterior{{$objetive->id_obj}}" name="calificacion_anterior{{$objetive->id_obj}}" value="{{$objetive->score_id}}">

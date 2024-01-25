@@ -3,7 +3,7 @@ function aprobar(id_eval) {
     var nombre = "comentarios";
     nombre = nombre.concat(id_eval);
     var comentarios = document.getElementById(nombre).value;
-    var anio = 2021;
+    var anio = 2023;
 
     // nombres para poder bloquear botones
     var icomentario = "#comentarios"
@@ -68,7 +68,7 @@ function aprobar(id_eval) {
     } else {
         $.ajax({
             type: 'post',
-            url: 'evalaprove',
+            url: '../evalaprove',
             data: { 'id_empleado': id_eval, 'anio': anio, 'comentario': comentarios, 'arrNum': arrNum, 'arrCal': arrCal, 'score': score, 'score_redondeado': score_redondeado },
 
             success: function(data) {
@@ -83,6 +83,7 @@ function aprobar(id_eval) {
 
             },
             error: function(data){
+                console.log(data);
                 Swal.fire({
                     icon: 'warning',
                     text: 'El año esta cerrado',
@@ -97,7 +98,7 @@ function aprobar(id_eval) {
 function rechazar(id_eval) {
     var nombre = "comentarios";
     nombre = nombre.concat(id_eval);
-    var anio = 2021;
+    var anio = 2023;
     var comentarios = document.getElementById(nombre).value;
 
     var icomentario = "#comentarios"
@@ -137,7 +138,7 @@ function rechazar(id_eval) {
 
     $.ajax({
         type: 'post',
-        url: 'evalrefuse',
+        url: '../evalrefuse',
         data: { 'id_evaluacion': id_eval, 'anio': anio, 'comentario': comentarios },
 
         success: function(data) {

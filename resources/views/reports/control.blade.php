@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación Desempeño 2021')
+@section('title', 'Evaluación desempeño ' . $year)
 
 @section('content_header')
     @if( $type == 1)

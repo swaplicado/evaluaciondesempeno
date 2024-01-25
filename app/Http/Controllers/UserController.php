@@ -44,8 +44,8 @@ class UserController extends Controller
     {
         $departments = Department::where('is_delete',0)->get();
         $jobs = Job::where('is_delete',0)->get();
-
-        return view('auth/register', ['departments' => $departments, 'jobs' => $jobs]);
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        return view('auth/register', ['departments' => $departments, 'jobs' => $jobs])->with('year',$year[0]->year);
     }
 
     function normalize ($string) {
@@ -194,7 +194,8 @@ class UserController extends Controller
     public function change(){
         $id = auth()->id();
         $data = User::find($id);
-        return view('user.changePassword', compact('data'));   
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        return view('user.changePassword', compact('data'))->with('year',$year[0]->year);   
     }
 
     public function updatePassword(Request $request, $id){

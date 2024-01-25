@@ -40,8 +40,10 @@ class ObjetiveController extends Controller
         $datas->each(function($data){
             $data->score;
         });
-        
-        return view('eval.index', compact('datas'))->with('user',$user)->with('evaluacion',$evaluacion);
+
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        // $title = ""
+        return view('eval.index', compact('datas'))->with('user',$user)->with('evaluacion',$evaluacion)->with('year',$year[0]->year);
     }
 
     /**
@@ -60,8 +62,9 @@ class ObjetiveController extends Controller
             $ponderacion = $ponderacion + $datas[$i]->weighing;
         }
 
-        $year = Year::where('is_deleted','0')->orderBy('year','ASC')->pluck('id_year','year');
-        return view('eval.create')->with('years',$year)->with('id',$id)->with('ponderacion',$ponderacion);
+        $years = Year::where('is_deleted','0')->orderBy('year','ASC')->pluck('id_year','year');
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        return view('eval.create')->with('years',$years)->with('id',$id)->with('ponderacion',$ponderacion)->with('year',$year[0]->year);
     }
 
     /**
@@ -72,20 +75,24 @@ class ObjetiveController extends Controller
      */
     public function store(Request $request)
     {
-        if(auth()->user()->check_year(session()->get('id_year'))){
-            return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+        try {
+            if(auth()->user()->check_year(session()->get('id_year'))){
+                return redirect()->back()->with(['message' => 'El año esta cerrado', 'icon' => 'warning']);
+            }
+            $objetive = new Objetive();
+            $objetive->name = $request->name;
+            $objetive->eval_id = $request->id;
+            $objetive->activities = $request->activities;
+            $objetive->comment = $request->comment;
+            $objetive->weighing = $request->weighing;
+            $objetive->is_deleted = 0;
+            $objetive->created_by = auth()->id();
+            $objetive->updated_by = auth()->id();
+    
+            $objetive->save();
+        } catch (\Throwable $th) {
+            \Log::error($th);
         }
-        $objetive = new Objetive();
-        $objetive->name = $request->name;
-        $objetive->eval_id = $request->id;
-        $objetive->activities = $request->activities;
-        $objetive->comment = $request->comment;
-        $objetive->weighing = $request->weighing;
-        $objetive->is_deleted = 0;
-        $objetive->created_by = auth()->id();
-        $objetive->updated_by = auth()->id();
-
-        $objetive->save();
 
         return redirect('objetive')->with('mensaje','Objetivo fue creado con éxito');
     }
@@ -119,9 +126,9 @@ class ObjetiveController extends Controller
             $ponderacion = $ponderacion + $datas[$i]->weighing;
         }
 
-        $year = Year::where('is_deleted','0')->orderBy('year','ASC')->pluck('id_year','year');
-
-        return view('eval.edit')->with('years',$year)->with('id',$id)->with('ponderacion',$ponderacion)->with('objetivo',$objetivo);
+        $years = Year::where('is_deleted','0')->orderBy('year','ASC')->pluck('id_year','year');
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        return view('eval.edit')->with('years',$years)->with('id',$id)->with('ponderacion',$ponderacion)->with('objetivo',$objetivo)->with('year',$year[0]->year);
     }
 
     /**
@@ -264,14 +271,16 @@ class ObjetiveController extends Controller
 
         $scoreName = Score::where('is_deleted','0')->orderBy('id_score','ASC')->get();
 
-        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName)->with('isDirector',$isDirector);
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+
+        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName)->with('isDirector',$isDirector)->with('year',$year[0]->year);
         
     }
 
     public function refuse_evaluation(Request $request){
-        if(auth()->user()->check_year(session()->get('id_year'))){
-            abort();
-        }
+        //if(auth()->user()->check_year(session()->get('id_year'))){
+          //  abort();
+        //}
         $evaluacion = Evaluation::findOrFail($request->id_evaluacion);
 
         //crear la nueva versión de la evaluación
@@ -323,43 +332,47 @@ class ObjetiveController extends Controller
     }
 
     public function aprove_score(Request $request){
-        if(auth()->user()->check_year(session()->get('id_year'))){
-            abort();
-        }
-        $evaluacion = Evaluation::find($request->id_empleado);
-        $evaluacion->eval_status_id = 3;
-        $evaluacion->updated_by = auth()->id();
-        $evaluacion->score = $request->score;
-        $evaluacion->score_id = $request->score_redondeado;
-        $evaluacion->comment = $request->comentario;
-        $evaluacion->save();
-
-        $status_log = new Objetive_status_log();
-        $status_log->eval_id = $request->id_empleado;
-        $status_log->eval_status_id = 3;
-
-        $status_log->created_by = auth()->id();
-        $status_log->updated_by = auth()->id();
-        $status_log->save();
-
-        $log = new Eval_score_log();
-        $log->eval_id = $request->id_empleado;
-        $log->score = $request->score;
-        $log->score_id = $request->score_redondeado;
-
-        $log->created_by = auth()->id();
-        $log->updated_by = auth()->id();
-        $log->save();
-        
-        for($i = 0 ; count($request->arrNum) > $i ; $i++){
-            $obj = Objetive::findOrFail($request->arrNum[$i]);
-            $obj->score_id = $request->arrCal[$i];
+        try {
+            // if(auth()->user()->check_year(session()->get('id_year'))){
+            //     abort();
+            // }
+            $evaluacion = Evaluation::find($request->id_empleado);
+            $evaluacion->eval_status_id = 3;
+            $evaluacion->updated_by = auth()->id();
+            $evaluacion->score = $request->score;
+            $evaluacion->score_id = $request->score_redondeado;
+            $evaluacion->comment = $request->comentario;
+            $evaluacion->save();
+    
+            $status_log = new Objetive_status_log();
+            $status_log->eval_id = $request->id_empleado;
+            $status_log->eval_status_id = 3;
+    
+            $status_log->created_by = auth()->id();
+            $status_log->updated_by = auth()->id();
+            $status_log->save();
+    
+            $log = new Eval_score_log();
+            $log->eval_id = $request->id_empleado;
+            $log->score = $request->score;
+            $log->score_id = $request->score_redondeado;
+    
+            $log->created_by = auth()->id();
+            $log->updated_by = auth()->id();
+            $log->save();
             
-            $obj->updated_by = auth()->id();
-            $obj->save();
-
+            for($i = 0 ; count($request->arrNum) > $i ; $i++){
+                $obj = Objetive::findOrFail($request->arrNum[$i]);
+                $obj->score_id = $request->arrCal[$i];
+                
+                $obj->updated_by = auth()->id();
+                $obj->save();
+    
+            }
+            $data = 1;
+            return response()->json(array($data));    
+        } catch (\Throwable $th) {
+            \Log::error($th);
         }
-        $data = 1;
-        return response()->json(array($data));    
     }
 }
