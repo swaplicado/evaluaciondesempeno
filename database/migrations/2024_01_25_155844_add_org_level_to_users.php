@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDoEvaluationToUsers extends Migration
+class AddOrgLevelToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddDoEvaluationToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('do_evaluation')->after('password')->default(1);
+            $table->integer('org_level')->after('do_evaluation')->default(11);
         });
     }
 
@@ -26,7 +26,7 @@ class AddDoEvaluationToUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('do_evaluation');    
+            $table->dropColumn('org_level');
         });
     }
 }

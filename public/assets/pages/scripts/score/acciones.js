@@ -68,7 +68,7 @@ function aprobar(id_eval) {
     } else {
         $.ajax({
             type: 'post',
-            url: 'evalaprove',
+            url: '../evalaprove',
             data: { 'id_empleado': id_eval, 'anio': anio, 'comentario': comentarios, 'arrNum': arrNum, 'arrCal': arrCal, 'score': score, 'score_redondeado': score_redondeado },
 
             success: function(data) {
@@ -137,7 +137,7 @@ function rechazar(id_eval) {
 
     $.ajax({
         type: 'post',
-        url: 'evalrefuse',
+        url: '../evalrefuse',
         data: { 'id_evaluacion': id_eval, 'anio': anio, 'comentario': comentarios },
 
         success: function(data) {

@@ -13,6 +13,7 @@ use DB;
 use App\SUtils\SEval;
 use App\SUtils\SObjetive;
 use App\Models\Eval_score_log;
+use Illuminate\Support\Facades\Log;
 
 class ObjetiveController extends Controller
 {
@@ -302,43 +303,134 @@ class ObjetiveController extends Controller
     }
 
     public function aprove_score(Request $request){
-        if(auth()->user()->check_year(session()->get('id_year'))){
-            abort();
-        }
-        $evaluacion = Evaluation::find($request->id_empleado);
-        $evaluacion->eval_status_id = 3;
-        $evaluacion->updated_by = auth()->id();
-        $evaluacion->score = $request->score;
-        $evaluacion->score_id = $request->score_redondeado;
-        $evaluacion->comment = $request->comentario;
-        $evaluacion->save();
+        // if(auth()->user()->check_year(session()->get('id_year'))){
+        //     abort();
+        // }
+        $evaluado = 0;
+        try {
+            DB::beginTransaction();
+            $evaluacion = Evaluation::find($request->id_empleado);
+            $evaluacion->eval_status_id = 3;
+            $evaluacion->updated_by = auth()->id();
+            $evaluacion->score = $request->score;
+            $evaluacion->score_id = $request->score_redondeado;
+            $evaluacion->comment = $request->comentario;
+            $evaluacion->save();
 
-        $status_log = new Objetive_status_log();
-        $status_log->eval_id = $request->id_empleado;
-        $status_log->eval_status_id = 3;
+            $status_log = new Objetive_status_log();
+            $status_log->eval_id = $request->id_empleado;
+            $status_log->eval_status_id = 3;
 
-        $status_log->created_by = auth()->id();
-        $status_log->updated_by = auth()->id();
-        $status_log->save();
+            $status_log->created_by = auth()->id();
+            $status_log->updated_by = auth()->id();
+            $status_log->save();
 
-        $log = new Eval_score_log();
-        $log->eval_id = $request->id_empleado;
-        $log->score = $request->score;
-        $log->score_id = $request->score_redondeado;
+            $log = new Eval_score_log();
+            $log->eval_id = $request->id_empleado;
+            $log->score = $request->score;
+            $log->score_id = $request->score_redondeado;
 
-        $log->created_by = auth()->id();
-        $log->updated_by = auth()->id();
-        $log->save();
-        
-        for($i = 0 ; count($request->arrNum) > $i ; $i++){
-            $obj = Objetive::findOrFail($request->arrNum[$i]);
-            $obj->score_id = $request->arrCal[$i];
+            $log->created_by = auth()->id();
+            $log->updated_by = auth()->id();
+            $log->save();
             
-            $obj->updated_by = auth()->id();
-            $obj->save();
+            for($i = 0 ; count($request->arrNum) > $i ; $i++){
+                $obj = Objetive::findOrFail($request->arrNum[$i]);
+                $obj->score_id = $request->arrCal[$i];
+                
+                $obj->updated_by = auth()->id();
+                $obj->save();
 
+            }
+            DB::commit();
+            $evaluado = 1;
+        } catch (\Throwable $th) {
+            $data = 1;
+            DB::rollBack();
+            return false; 
         }
+        if($evaluado == 1){
+            $notify = ObjetiveController::check_notify(auth()->id());
+            if($notify == 1){
+                $levels = ObjetiveController::levels_to_notify(auth()->id());
+                if(count($levels) > 0){
+                    $sendEmail = ObjetiveController::check_complete_evals(auth()->id(),$levels);
+                    if($sendEmail == 1){
+                        Log::info('Se enviará correo');   
+                    }
+                }
+            }
+        }
+
         $data = 1;
         return response()->json(array($data));    
     }
+
+    public function check_notify($id_user){
+        $response = 0;
+        $user = DB::table('users')
+                    ->where('id',$id_user)
+                    ->get();
+        if(count($user) > 0){
+            if($user[0]->notify == 1){
+                $response = 1;
+            }else{
+                $response = 0;
+            }
+        }
+        return $response;
+    }
+
+    public function levels_to_notify($id_user){
+        $response = [];
+        $user = DB::table('users')
+                    ->where('id',$id_user)
+                    ->get();
+        if(count($user) > 0){
+            if($user[0]->levels_notify != ''){
+                $cadenaLevels = $user[0]->levels_notify;
+                $response = explode(",", $cadenaLevels);
+            }
+        }
+        return $response;
+    }
+
+    public function check_complete_evals($id_user,$arrLevel){
+        $year = session()->get('id_year');
+        $notify = 0;
+        $employees = DB::table('evals')
+                        ->select(DB::raw('DISTINCT evals.user_id AS user_id'))
+                        ->join('users','users.id','=','evals.user_id')
+                        ->where('evals.eval_user_id',$id_user)
+                        ->where('evals.is_deleted',0)
+                        ->where('evals.year_id',$year)
+                        ->whereIn('users.org_level',$arrLevel)
+                        ->get();
+
+        $contadorEmpleados = 0;
+        $arrEmp = [];
+        if(count($employees) > 0){
+            foreach($employees AS $emp){
+                $arrEmp[$contadorEmpleados] = $emp->user_id;
+                $contadorEmpleados++;
+            }
+        }else{
+            return $notify;
+        }
+        
+        $arrEmp = implode(", ", $arrEmp);
+        //$cadena1 = "SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, users.full_name AS name, ev.eval_status_id AS eval_status_id, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$id_user." AND year_id = ".$year." AND user_id IN (".$sLevel.") AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name";
+        $emplEvals = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, users.full_name AS name, ev.eval_status_id AS eval_status_id, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$id_user." AND year_id = ".$year." AND user_id IN (".$arrEmp.") AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name"); 
+        if(count($emplEvals) > 0 ){
+            foreach($emplEvals AS $emp){
+                if($emp->eval_status_id != 3){
+                    return $notify;
+                }
+            }
+            $notify = 1;
+        }
+
+        return $notify;
+    }
+
 }
