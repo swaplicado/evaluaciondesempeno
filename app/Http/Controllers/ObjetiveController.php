@@ -15,7 +15,9 @@ use App\SUtils\SObjetive;
 use App\Models\Eval_score_log;
 use Illuminate\Support\Facades\Log;
 use App\Mail\ManagersFinishReviewingMail;
+use App\Mail\ManagersEvalMail;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Mail_log;
 
 class ObjetiveController extends Controller
 {
@@ -180,40 +182,92 @@ class ObjetiveController extends Controller
         if(auth()->user()->check_year(session()->get('id_year'))){
             abort();
         }
-        DB::beginTransaction();
-        $evaluacion = Evaluation::findOrFail($request->evaluacion);
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        try{
+            DB::beginTransaction();
+            $evaluacion = Evaluation::findOrFail($request->evaluacion);
 
-        $lObjectives = Objetive::where('eval_id', $evaluacion->id_eval)
-                                ->where('is_deleted', 0)
-                                ->get();
+            $lObjectives = Objetive::where('eval_id', $evaluacion->id_eval)
+                                    ->where('is_deleted', 0)
+                                    ->get();
 
-        $lObjectivesNoComment = [];
-        foreach ($lObjectives as $objective) {
-            if(!preg_match('/[a-zA-Z]/', $objective->comment)){
-                array_push($lObjectivesNoComment, $objective->name);
+            $lObjectivesNoComment = [];
+            foreach ($lObjectives as $objective) {
+                if(!preg_match('/[a-zA-Z]/', $objective->comment)){
+                    array_push($lObjectivesNoComment, $objective->name);
+                }
             }
+            if(count($lObjectivesNoComment) > 0){
+                http_response_code(400);
+                $response = array("error" => "Los siguientes objetivos no tienen comentario:", "objectives" => $lObjectivesNoComment);
+                echo json_encode($response);
+                die();
+            }
+
+            $evaluacion->eval_status_id = 2;
+            $evaluacion->updated_by = auth()->id();
+            $evaluacion->save();
+
+            $status_log = new Objetive_status_log();
+            $status_log->eval_id = $request->evaluacion;
+            $status_log->eval_status_id = 2;
+
+            $status_log->created_by = auth()->id();
+            $status_log->updated_by = auth()->id();
+            $status_log->save();
+            $data = 1;
+
+            DB::commit();
+        }catch(\Throwable $th){
+            $data = 0;
+            DB::rollBack();    
+            return false;
         }
-        if(count($lObjectivesNoComment) > 0){
-            http_response_code(400);
-            $response = array("error" => "Los siguientes objetivos no tienen comentario:", "objectives" => $lObjectivesNoComment);
-            echo json_encode($response);
-            die();
+        if($data == 1){
+            $notify = ObjetiveController::revisor_notify(auth()->id());
+            if($notify == 1){
+                $send_email = ObjetiveController::check_level(auth()->id());  
+                if($send_email == 1){
+                    if(auth()->id() != 59){
+                        $evaluador = DB::table('evals as e')
+                                            ->leftjoin('users AS eName', 'eName.id', '=', 'e.eval_user_id')
+                                            ->leftjoin('users AS cName', 'cName.id', '=', 'e.user_id')
+                                            ->select('e.*','eName.full_name as eval_name','cName.full_name as col_name')
+                                            ->where('e.is_deleted',0)
+                                            ->where('e.year_id',session()->get('id_year'))
+                                            ->where('e.user_id',auth()->id())
+                                            ->orderBy('eName.full_name')
+                                            ->first();
+
+                        $user = DB::table('users')
+                                    ->where('id', $evaluador->eval_user_id)
+                                    ->first();
+
+                        $us = DB::table('users')
+                        ->where('id', auth()->id())
+                        ->first();
+
+                        try{
+                            Mail::to('cesar.orozco@swaplicado.com.mx')->send(new ManagersEvalMail($us->firt_name,$us->last_name,$year[0]->year));
+                            //registrar que el envio de correo fue correcto
+                            $log = new Mail_log(); 
+                            $log->send_to = $evaluador->eval_user_id;
+                            $log->evaluator = auth()->id();
+                            $log->is_send = 1;
+                            $log->save();
+                        }catch(\Throwable $th){
+                            //registrar que el envio de correo fallo.
+                            $log = new Mail_log(); 
+                            $log->send_to = $evaluador->id;
+                            $log->evaluator = auth()->id();
+                            $log->is_send = 0;
+                            $log->save();   
+                        }
+                        
+                    }    
+                }
+            }    
         }
-
-        $evaluacion->eval_status_id = 2;
-        $evaluacion->updated_by = auth()->id();
-        $evaluacion->save();
-
-        $status_log = new Objetive_status_log();
-        $status_log->eval_id = $request->evaluacion;
-        $status_log->eval_status_id = 2;
-
-        $status_log->created_by = auth()->id();
-        $status_log->updated_by = auth()->id();
-        $status_log->save();
-        $data = 1;
-
-        DB::commit();
         return response()->json(array($data));   
     }
     
@@ -336,6 +390,7 @@ class ObjetiveController extends Controller
 
     public function aprove_score(Request $request){
         $evaluado = 0;
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
         try {
             DB::beginTransaction();
             // if(auth()->user()->check_year(session()->get('id_year'))){
@@ -380,12 +435,12 @@ class ObjetiveController extends Controller
             return false; 
         }
         if($evaluado == 1){
-            $notify = ObjetiveController::check_notify(auth()->id());
-            if($notify == 1){
-                $levels = ObjetiveController::levels_to_notify(auth()->id());
-                if(count($levels) > 0){
-                    $sendEmail = ObjetiveController::check_complete_evals(auth()->id(),$levels);
-                    if($sendEmail == 1){
+            $finished = ObjetiveController::check_employees_evals(auth()->id());
+            if($finished == 1){
+                $notify = ObjetiveController::revisor_notify(auth()->id());
+                if($notify == 1){
+                    $send_email = ObjetiveController::check_level(auth()->id());  
+                    if($send_email == 1){
                         if(auth()->id() != 59){
                             $evaluador = DB::table('evals as e')
                                                 ->leftjoin('users AS eName', 'eName.id', '=', 'e.eval_user_id')
@@ -401,10 +456,31 @@ class ObjetiveController extends Controller
                                         ->where('id', $evaluador->eval_user_id)
                                         ->first();
 
-                            Mail::to($user->email)->send(new ManagersFinishReviewingMail());
+                            $us = DB::table('users')
+                            ->where('id', auth()->id())
+                            ->first();
+                            $arrEvaluated = ObjetiveController::ArrEvaluated(auth()->id(),$year[0]->id_year);
+
+                            try{
+                                Mail::to($user->email)->send(new ManagersFinishReviewingMail($us->firt_name,$us->last_name,$year[0]->year,$arrEvaluated));
+                                //registrar que el envio de correo fue correcto
+                                $log = new Mail_log(); 
+                                $log->send_to = $evaluador->eval_user_id;
+                                $log->evaluator = auth()->id();
+                                $log->is_send = 1;
+                                $log->save();
+                            }catch(\Throwable $th){
+                                //registrar que el envio de correo fallo.
+                                $log = new Mail_log(); 
+                                $log->send_to = $evaluador->id;
+                                $log->evaluator = auth()->id();
+                                $log->is_send = 0;
+                                $log->save();   
+                            }
+                            
                         }
-                    }
-                }
+                    } 
+                }   
             }
         }
 
@@ -479,5 +555,102 @@ class ObjetiveController extends Controller
 
         return $notify;
     }
+    //revisar quien es el revisor del usuario y si tiene las notificaciones activas
+    public function revisor_notify($user_id){
+        $notify = 0;
+        $year = session()->get('id_year');
+        $revisor = DB::table('evals')
+                        ->where('user_id',$user_id)
+                        ->where('year_id',$year)
+                        ->where('is_deleted',0)
+                        ->get();
+        $userRevisor = DB::table('users')
+                            ->where('id',$revisor[0]->eval_user_id)
+                            ->get();
+        if(count($revisor) > 0){
+            if($userRevisor[0]->notify == 1){
+                $notify =  1;
+            }
+        }
 
+        return $notify;
+    }
+    //revisar si todos los empleados que tengo que revisar estan completos
+    public function check_employees_evals($user_id){
+        $notify = 0;
+        $year = session()->get('id_year');
+        $empEvals = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, users.full_name AS name, ev.eval_status_id AS eval_status_id, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user_id." AND year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name"); 
+        if(count($empEvals) > 0){
+            foreach($empEvals AS $emp){
+                if($emp->eval_status_id != 3){
+                    return $notify;
+                }
+            }
+            $notify = 1;    
+        }
+
+        return $notify;
+    }
+    //revisar si tu nivel esta en los que generán notificación en tu jefe
+    public function check_level($user_id){
+        $year = session()->get('id_year');
+        $revisor = DB::table('evals')
+                    ->where('user_id',$user_id)
+                    ->where('year_id',$year)
+                    ->where('is_deleted',0)
+                    ->get();
+        $user = DB::table('users')
+                    ->where('id',$user_id)
+                    ->get();
+        $notify = 0;
+        if(count($revisor) > 0){
+            $levels = ObjetiveController::levels_to_notify($revisor[0]->eval_user_id);
+            if(count($levels) > 0){
+                for($i = 0 ; $i < count($levels) ; $i++){
+                    if($levels[$i] == $user[0]->org_level){
+                        $notify = 1;
+                    }
+                }
+            }
+        }
+        return $notify;
+    }
+
+    public function ArrEvaluated($user_id,$year){
+        $evaluated = DB::table('evals')
+                        ->join('users','users.id','=','evals.user_id')
+                        ->select(DB::raw('DISTINCT evals.user_id AS user_id, users.firt_name AS firts, users.last_name AS last'))
+                        ->where('eval_user_id',$user_id)
+                        ->where('evals.year_id',$year)
+                        ->where('evals.is_deleted',0)
+                        ->get();
+        $arrEvaluated = [];
+        if(count($evaluated) > 0){
+            for($i = 0 ; $i < count($evaluated) ; $i++){
+                $arrEvaluated [$i] = $evaluated[$i]->firts.' '.$evaluated[$i]->last;
+            }
+        }
+
+        return $arrEvaluated;
+        
+    }
+
+    // public function check_all_levels($user_id){
+    //     $revisor = DB::table('evals')
+    //                 ->where('user_id',$user_id)
+    //                 ->where('is_deleted',0)
+    //                 ->get();
+    //     $user = DB::table('users')
+    //                 ->where('id',$user_id)
+    //                 ->where('is_deleted',0)
+    //                 ->get();
+    //     if(count($revisor) > 0){
+    //         $levels = ObjetiveController::levels_to_notify($revisor[0]->eval_user_id);
+    //         if(count($levels) > 0){
+    //             for($i = 0 ; $i > count($levels) ; $i++){
+    //                 $revisors = DB::table('evals')
+    //             }
+    //         }    
+    //     }   
+    // }
 }

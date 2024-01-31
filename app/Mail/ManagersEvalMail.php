@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ManagersFinishReviewingMail extends Mailable
+class ManagersEvalMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -16,12 +16,11 @@ class ManagersFinishReviewingMail extends Mailable
      *
      * @return void
      */
-    public function __construct($name,$lastname,$year,$evaluated)
+    public function __construct($name,$lastname,$year)
     {
        $this->name = $name;
        $this->lastname = $lastname; 
        $this->year = $year;
-       $this->evaluated = $evaluated;
     }
 
     /**
@@ -31,9 +30,9 @@ class ManagersFinishReviewingMail extends Mailable
      */
     public function build()
     {
-        $email = "evaluaciondesempeno@aeth.mx";
+        $email = "adrian.aviles.swaplicado@gmail.com";
         return $this->from($email)
                         ->subject('Evaluación de desempeño')
-                        ->view('mails.ManagersFinishReviewingMail')->with('name',$this->name)->with('lastname',$this->lastname)->with('year',$this->year)->with('evaluated',$this-evaluated);
+                        ->view('mails.ManagersEvalMail')->with('name',$this->name)->with('lastname',$this->lastname)->with('year',$this->year);
     }
 }

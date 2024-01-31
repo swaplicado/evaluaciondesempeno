@@ -17,11 +17,6 @@
 </head>
     <body>
         <h2>Evaluación de desempeño {{$year}}</h2>
-        <h3>{{$name.' '.$lastname}} acaba de completar la evaluación de sus colaboradores asignados:</h3>
-        <ul>
-            @foreach($evaluated AS $eval)
-                <li>{{$eval}}</li>
-            @endforeach
-        </ul>
+        <h3>{{$name.' '.$lastname}} acaba de enviar sus objetivos para revisión.</h3>
     </body>
 </html>
