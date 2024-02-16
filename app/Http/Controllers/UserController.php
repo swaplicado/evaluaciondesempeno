@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Department;
 use App\Models\Job;
+use GuzzleHttp\Client;
+use App\SUtils\SPghUtils;
 use App\User;
 use App\Role;
 use Validator;
@@ -46,6 +48,35 @@ class UserController extends Controller
         $jobs = Job::where('is_delete',0)->get();
         $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
         return view('auth/register', ['departments' => $departments, 'jobs' => $jobs])->with('year',$year[0]->year);
+    }
+
+    public function createGlobal()
+    {
+        $json = '[{"id_global_user": 1,"username": "CARMONA FIGUEROA, EDWIN OMAR","employee_num": 990,"external_id": 3338, "email": "cesar.i@swaplicado.com.mx", "password": 1234}]';
+        $departments = Department::where('is_delete',0)->get();
+        $jobs = Job::where('is_delete',0)->get();
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        $uGlobales = json_decode($json);
+        $data = SPghUtils::loginToPGH();
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => $data->token_type.' '.$data->access_token
+        ];
+        
+        $client = new Client([
+            'base_uri' => '127.0.0.1/GHPort/public/api/',
+            'timeout' => 30.0,
+            'headers' => $headers
+        ]);   
+        $body = '{"company":"8"}';
+        $request = new \GuzzleHttp\Psr7\Request('GET', 'getPendingUser', $headers,$body);
+        $response = $client->sendAsync($request)->wait();
+        
+        $jsonString = $response->getBody()->getContents();
+
+        $uGlobales = json_decode($jsonString);  
+        return view('user.createGlobal')->with('uGlobales',$uGlobales->data)->with('departments', $departments)->with('jobs', $jobs)->with('year',$year);      
     }
 
     function normalize ($string) {
@@ -146,6 +177,74 @@ class UserController extends Controller
         return redirect(route('crear_user'))->with(['message' => $msg, 'icon' => $icon]);
     }
 
+    public function storeGlobal(Request $request){
+        try {
+            $success = true;
+            DB::transaction(function () use ($request,$success) {
+                
+                $user = User::create([
+                    'name' => $request->fus,
+                    'email' => $request->femail,
+                    'num_employee' => $request->fnumEmpl,
+                    'department_id' => $request->dept,
+                    'job_id' => $request->job,
+                    'password' => $request->fpass,
+                    'do_evaluation' => 1,
+                    'firt_name' => $request->fname,
+                    'last_name' => $request->fapellidos,
+                    'full_name' => $request->fapellidos.', '.$request->fname
+                ]);
+
+                $user->roles()->attach(Role::where('id_rol', 2)->first());
+                //enviar el id del usuario a global data
+                $data = SPghUtils::loginToPGH();
+                if($data->status == 'success'){
+                    $headers = [
+                        'Content-Type' => 'application/json',
+                        'Accept' => '*/*',
+                        'Authorization' => $data->token_type.' '.$data->access_token
+                    ];
+                
+                    $client = new Client([
+                        'base_uri' => '127.0.0.1/GHPort/public/api/',
+                        'timeout' => 30.0,
+                        'headers' => $headers,
+                    ]);
+                
+                    $body = json_encode(['user' => $user, 'id_global' => $request->fglobal, 'id_system' => '8']);
+                    
+                    $request = new \GuzzleHttp\Psr7\Request('POST', 'insertUserVsSystem', $headers, $body);
+                    $response = $client->sendAsync($request)->wait();
+                    $jsonString = $response->getBody()->getContents();
+                    $data = json_decode($jsonString);
+                    
+                    if($data->status == 'success'){
+                        DB::commit();
+                    }else{
+                        DB::rollBack();
+                        throw new \Exception('Fallo');
+                    }
+                }else{
+                    DB::rollBack();
+                    throw new \Exception('Fallo');
+                }
+            });                
+        } catch (\Throwable $th) {
+            $success = false;
+            DB::rollBack();
+            $msg = "Error al guardar el registro";
+            $icon = "error";
+            return redirect(route('crear_global_user'))->with(['message' => $msg, 'icon' => $icon]);
+        }
+        if($success == true){
+            $msg = "Se guardó el registro con éxito";
+            $icon = "success";
+            return redirect(route('crear_global_user'))->with(['message' => $msg, 'icon' => $icon]);
+        }
+        
+        
+    }
+
     /**
      * Display the specified resource.
      *
@@ -180,6 +279,98 @@ class UserController extends Controller
         //
     }
 
+    public function editGlobal(){
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        $user = DB::table('users')
+                    ->where('id',auth()->id())
+                    ->first();
+        $rol = DB::table('user_rol')
+                    ->where('user_id',auth()->id())
+                    ->first();
+        return view('user.updateGlobal')->with('user',$user)->with('year',$year)->with('rol',$rol);      
+    }
+    public function updateGlobal(Request $request){
+        $success = false;
+        try {
+            if (! (\Hash::check($request->prevpass, \Auth::user()->password))) {
+                $msg = "La contraseña anterior no concuerda con nuestros registros";
+                $icon = "error";
+                
+                return redirect(route('editar_global_user'))->with(['message' => $msg, 'icon' => $icon]); 
+            }
+            if($request->newpass != $request->newpass1){
+                $msg = "La nueva contraseña es diferente al campo confirmar contraseña";
+                $icon = "error";
+                
+                return redirect(route('editar_global_user'))->with(['message' => $msg, 'icon' => $icon]);    
+            }
+            DB::transaction(function () use ($request) {
+                $user = User::findOrFail($request->id_user);
+                if($request->rol == 1){
+                    $user->email = $request->email;
+                    $user->name = $request->us;
+                    $user->password = Hash::make($request->newpass);
+                }else{
+                    $user->password = Hash::make($request->newpass);
+                }
+                $user->save();
+
+                if(isset($request->us)){
+                    $user->username = $request->us;
+                }else{
+                    $user->username = $user->name;
+                }
+                $user->pass = Hash::make($request->newpass);  
+                
+                
+                //enviar el id del usuario a global data
+                $data = SPghUtils::loginToPGH();
+                if($data->status == 'success'){
+                    $headers = [
+                        'Content-Type' => 'application/json',
+                        'Accept' => '*/*',
+                        'Authorization' => $data->token_type.' '.$data->access_token
+                    ];
+                
+                    $client = new Client([
+                        'base_uri' => '127.0.0.1/GHPort/public/api/',
+                        'timeout' => 30.0,
+                        'headers' => $headers,
+                    ]);
+                
+                    $body = json_encode(['user' => $user, 'fromSystem' => '8']);
+                    
+                    $request = new \GuzzleHttp\Psr7\Request('POST', 'updateGlobalPassword', $headers, $body);
+                    $response = $client->sendAsync($request)->wait();
+                    $jsonString = $response->getBody()->getContents();
+                    $data = json_decode($jsonString);
+
+                    if($data->status == 'success'){
+                        DB::commit();
+                    }else{
+                        DB::rollBack();
+                        throw new \Exception('Fallo');
+                    }
+                }else{
+                    DB::rollBack();
+                    throw new \Exception('Fallo');
+                }
+
+            });                
+        } catch (\Throwable $th) {
+            $success = false;
+            DB::rollBack();
+            $msg = "Error al guardar el registro";
+            $icon = "error";
+            return redirect(route('editar_global_user'))->with(['message' => $msg, 'icon' => $icon]);
+        }
+        if($success == true){
+            $msg = "Se guardó el registro con éxito";
+            $icon = "success";
+            return redirect(route('editar_global_user'))->with(['message' => $msg, 'icon' => $icon]);
+        }
+           
+    }
     /**
      * Remove the specified resource from storage.
      *

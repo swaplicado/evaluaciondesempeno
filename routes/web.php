@@ -44,7 +44,7 @@ Route::group(['middleware' => ['auth']], function() {
 
 /* Objetivos jefes */
 
-    Route::get('objetive/list/{id}', 'ObjetiveController@list_objetives')->name('listar_objetivos');
+    Route::get('objetive/list/{id}/{status}', 'ObjetiveController@list_objetives')->name('listar_objetivos');
     Route::post('objetive/evalrefuse', 'ObjetiveController@refuse_evaluation')->name('evaluacion_rechazar');
     Route::post('objetive/evalaprove', 'ObjetiveController@aprove_score')->name('evaluacion_aprobar');
     //Route::post('objetive/calificar', 'ObjetiveController@hola')->name('calificarObjetivo'); 
@@ -72,7 +72,12 @@ Route::group(['middleware' => ['auth']], function() {
 /* Registrar usuarios */
 
     Route::get('/users/create', 'UserController@create')->name('crear_user');
+    Route::get('/users/createGlobal', 'UserController@createGlobal')->name('crear_global_user');
     Route::post('/users/store', 'UserController@store')->name('guardar_user');
+    Route::post('/users/storeGlobal', 'UserController@storeGlobal')->name('guardar_global_user');
+    Route::get('/users/editGlobal', 'UserController@editGlobal')->name('editar_global_user');
+    Route::post('/users/updateGlobal', 'UserController@updateGlobal')->name('modificar_global_user');
+    
 
 /* Fecha de cierre */
 
