@@ -290,7 +290,7 @@ class UserController extends Controller
         return view('user.updateGlobal')->with('user',$user)->with('year',$year)->with('rol',$rol);      
     }
     public function updateGlobal(Request $request){
-        $success = false;
+        $success = true;
         try {
             if (! (\Hash::check($request->prevpass, \Auth::user()->password))) {
                 $msg = "La contraseña anterior no concuerda con nuestros registros";
