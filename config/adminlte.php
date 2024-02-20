@@ -31,7 +31,7 @@ return [
     */
 
     'use_ico_only' => true,
-    'use_full_favicon' => false,
+    'use_full_favicon' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -227,11 +227,6 @@ return [
     'menu' => [
         // Navbar items:
         [
-            'type'         => 'navbar-search',
-            'text'         => 'search',
-            'topnav_right' => true,
-        ],
-        [
             'type'         => 'fullscreen-widget',
             'topnav_right' => true,
         ],
@@ -252,9 +247,33 @@ return [
             'can' => 'doEvaluation',
         ],
         [
-            'text' => 'Objetivos colab. dir.',
-            'url'  => 'objetive/list/1',
+            'text'    => 'Objetivos  colab. dir.',
             'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text'    => 'Todos obj.',
+                    'url'  => 'objetive/list/1/0',
+                    'icon' => 'fas fa-fw fa-users',
+                    
+                ],
+                [
+                    'text'    => 'Definiendo obj.',
+                    'url'  => 'objetive/list/1/1',
+                    'icon' => 'fas fa-fw fa-list',
+                    
+                ],
+                [
+                    'text'    => 'Evaluando obj.',
+                    'url'  => 'objetive/list/1/2',
+                    'icon' => 'fas fa-fw fa-eye',
+                    
+                ],
+                [
+                    'text'    => 'Obj. evaluados',
+                    'url'  => 'objetive/list/1/3',
+                    'icon' => 'fas fa-fw fa-check',   
+                ]
+            ],
         ],
         [
             'text' => 'Objetivos todos colab.',

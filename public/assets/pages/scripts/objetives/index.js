@@ -14,6 +14,21 @@ $(document).ready(function() {
             }
         });
     });
+    $("#indicators").on('click', '.editar', function() {
+        event.preventDefault();
+        const form = $(this);
+        swal.fire({
+            title: '¿Está seguro que desea editar este objetivo?',
+            text: "Al tener calificación si se edita se perderá",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Continuar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = form[0].href;
+            }
+        });
+    });
 
     function ajaxRequest(form) {
         $.ajax({

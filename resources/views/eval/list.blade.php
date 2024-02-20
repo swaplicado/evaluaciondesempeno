@@ -4,9 +4,34 @@
 
 @section('content_header')
     @if ($isDirector == true)
-        <h1>Objetivos de mis colaboradores</h1>
+        @switch($status)
+            @case(0)
+                <h1>Objetivos de mis colaboradores</h1>
+            @case(1)
+                <h1>Objetivos en definición de mis colaboradores</h1>
+                @break
+            @case(2)
+                <h1>Objetivos por evaluar de mis colaboradores</h1>
+                @break
+            @case(3)
+                <h1>Objetivos evaluados de mis colaboradores</h1>
+                @break
+        @endswitch
+        
     @else
-        <h1>Objetivos de mis colaboradores directos</h1>
+    @switch($status)
+            @case(0)
+                <h1>Objetivos de mis colaboradores directos</h1>
+            @case(1)
+                <h1>Objetivos en definición de mis colaboradores directos</h1>
+                @break
+            @case(2)
+                <h1>Objetivos por evaluar de mis colaboradores directos</h1>
+                @break
+            @case(3)
+                <h1>Objetivos evaluados de mis colaboradores directos</h1>
+                @break
+        @endswitch
     @endif
     
 @stop
@@ -26,7 +51,7 @@
                                     @if($eval->eval_status_id == 1)
                                         <span class="badge badge-primary"><i class="fa fa-list" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
                                     @elseif($eval->eval_status_id == 2)
-                                        <span class="badge badge-primary"><i class="fa fa-search" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
+                                        <span class="badge badge-primary"><i class="fa fa-eye" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
                                     @else
                                         <span class="badge badge-primary"><i class="fa fa-check" aria-hidden="true"></i></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{$eval->user_name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{count($eval->objetives)}} 
                                     @endif
@@ -36,6 +61,8 @@
                         </div>
                         <?php $cadenaObjetivos = ""; ?>
                         <?php $numeroObjetivo = 0 ; ?>
+                        <?php $calificacion = 0; ?>
+                        <?php $calificacionRedondeada = 0 ; ?>
                         @foreach($eval->objetives as $objetive)
                         <?php $hay_indicador = 1; $num_obj++;?>
                         <?php $numeroObjetivo++ ; ?>
@@ -63,11 +90,14 @@
                                                     <?php $ponderacion = $objetive->weighing / 100; $ponderacion = $ponderacion * $objetive->score_id; ?>
                                                     <p class="card-text"><b>Calificación ponderada:</b> <input type="text" disabled id="calificacion_pon{{$objetive->id_obj}}" value="{{ $ponderacion }}"></p>
                                                     <input type="hidden" id="calificacion_anterior{{$objetive->id_obj}}" name="calificacion_anterior{{$objetive->id_obj}}" value="{{$objetive->score_id}}">
+                                                    <?php $calificacion = $calificacion+$ponderacion; ?>
+
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                         @endforeach
 
                         @if($hay_indicador == 1)
@@ -76,9 +106,9 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <input type="hidden" id="num{{$eval->eval_id}}" name="num{{$eval->eval_id}}" value="{{$num_obj}}">
-                                            @if($eval->score_id == null)
-                                                <p class="card-text">Evaluación sin redondear: <input class='form-control' type="number" value="0" id="sinr{{$eval->eval_id}}" name="sinr{{$eval->eval_id}}" readonly></p>
-                                                <p class="card-text">Evaluación final: <input class='form-control' type="number" value="0" id="total{{$eval->eval_id}}" name="total{{$eval->eval_id}}" readonly></p>
+                                            @if($eval->eval_status_id == 2)
+                                                <p class="card-text">Evaluación sin redondear: <input class='form-control' type="number" value="{{$calificacion}}" id="sinr{{$eval->eval_id}}" name="sinr{{$eval->eval_id}}" readonly></p>
+                                                <p class="card-text">Evaluación final: <input class='form-control' type="number" value="{{round($calificacion)}}" id="total{{$eval->eval_id}}" name="total{{$eval->eval_id}}" readonly></p>
                                                 <p class="card-text">Evaluación obtenida:<input class="form-control" type="text" value="Sin calificar" id="califnombre{{$eval->eval_id}}" readonly></p>
                                                 <p class="card-text">Comentarios: <input class='form-control' type="text" id="comentarios{{$eval->eval_id}}" name="comentarios{{$eval->eval_id}}" value="{{$eval->comment}}" readonly> </p>
                                                 @if ($isDirector == false)
@@ -102,6 +132,36 @@
                                                     </button>
                                                 @endif 
                                                 <input type="hidden" id="havescore{{$eval->eval_id}}" name="havescore{{$eval->eval_id}}" value="0">
+                                            @elseif($eval->eval_status_id == 1)
+                                                <p class="card-text">Evaluación sin redondear: <input class='form-control' type="number" value="{{$calificacion}}" id="sinr{{$eval->eval_id}}" name="sinr{{$eval->eval_id}}" readonly></p>
+                                                <p class="card-text">Evaluación final: <input class='form-control' type="number" value="{{round($calificacion)}}" id="total{{$eval->eval_id}}" name="total{{$eval->eval_id}}" readonly></p>
+                                                @if($eval->ver > 1)
+                                                    <p class="card-text">Evaluación obtenida:<input class="form-control" type="text" value="Rechazados" id="califnombre{{$eval->eval_id}}" readonly></p>
+                                                @else
+                                                    <p class="card-text">Evaluación obtenida:<input class="form-control" type="text" value="Sin calificar" id="califnombre{{$eval->eval_id}}" readonly></p>
+                                                @endif
+                                                <p class="card-text">Comentarios: <input class='form-control' type="text" id="comentarios{{$eval->eval_id}}" name="comentarios{{$eval->eval_id}}" value="{{$eval->comment}}" readonly> </p>
+                                            @if ($isDirector == false)
+                                                <button type="button" class="btn btn-info check_year" onclick="recalif({{$eval->eval_id}})" id="ini{{$eval->eval_id}}" name="ini{{$eval->eval_id}}" disabled>
+                                                    Iniciar evaluación
+                                                </button>
+                                                <button type="button" class="btn btn-success check_year" onclick="aprobar({{$eval->eval_id}})" id="apro{{$eval->eval_id}}" name="apro{{$eval->eval_id}}" disabled>
+                                                    Terminar evaluación
+                                                </button>
+                                                <button type="button" class="btn btn-danger check_year" onclick="desblo({{$eval->eval_id}})" id="desbloquear{{$eval->eval_id}}" name="desbloquear{{$eval->eval_id}}" disabled>
+                                                    Rechazar objetivos
+                                                </button>
+                                                <button type="button" class="btn btn-danger check_year" onclick="rechazar({{$eval->eval_id}})" id="recha{{$eval->eval_id}}" name="recha{{$eval->eval_id}}" disabled>
+                                                    Regresar objetivos
+                                                </button>
+                                                <button type="button" class="btn btn-warning check_year" onclick="recalif({{$eval->eval_id}})" id="recalif{{$eval->eval_id}}" name="recalif{{$eval->eval_id}}" disabled>
+                                                    Volver a evaluar
+                                                </button> 
+                                                <button type="button" class="btn btn-secondary check_year" onclick="can({{$eval->eval_id}})" id="cancel{{$eval->eval_id}}" name="cancel{{$eval->eval_id}}"disabled>
+                                                    Abortar evaluación
+                                                </button>
+                                            @endif 
+                                            <input type="hidden" id="havescore{{$eval->eval_id}}" name="havescore{{$eval->eval_id}}" value="0">
                                             @else
                                                 <p class="card-text">Evaluación sin redondear: <input class='form-control' type="number" value="{{$eval->score}}" id="sinr{{$eval->eval_id}}" name="sinr{{$eval->eval_id}}" readonly></p>
                                                 <p class="card-text">Evaluación final: <input class='form-control' type="number" value="{{$eval->score_id}}" id="total{{$eval->eval_id}}" name="total{{$eval->eval_id}}" readonly></p>

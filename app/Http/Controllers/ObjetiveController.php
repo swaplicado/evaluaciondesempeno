@@ -16,6 +16,8 @@ use App\Models\Eval_score_log;
 use Illuminate\Support\Facades\Log;
 use App\Mail\ManagersFinishReviewingMail;
 use App\Mail\ManagersEvalMail;
+use App\Mail\ManagersApproveMail;
+use App\Mail\ManagersRefuseMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Mail_log;
 
@@ -153,6 +155,7 @@ class ObjetiveController extends Controller
         $objetivo->activities = $request->activities;
         $objetivo->comment = $request->comment;
         $objetivo->weighing = $request->weighing;
+        $objetivo->score_id = null;
 
         $objetivo->updated_by = auth()->id();
 
@@ -271,7 +274,7 @@ class ObjetiveController extends Controller
         return response()->json(array($data));   
     }
     
-    public function list_objetives(Request $request,$id){
+    public function list_objetives(Request $request,$id,$status){
         $id_user = auth()->id();
         $user = User::findOrFail($id_user);
         if($id == 1){
@@ -282,9 +285,9 @@ class ObjetiveController extends Controller
        
         $year = session()->get('id_year');
         if($isDirector == true){
-            $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name");
+            $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, ev.version AS ver, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name");
         }else{
-            $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id." AND year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name");
+            $empleados = DB::select("SELECT ev.id_eval AS id_eval, ev.year_id AS year_id, ev.comment AS comment, users.full_name AS name, sys_eval_status.name AS status_name, ev.eval_status_id AS eval_status_id, ev.score_id AS score_id, ev.score AS score, ev.version AS ver, users.id AS id_user  FROM evals ev INNER JOIN users ON ev.user_id = users.id INNER JOIN sys_eval_status ON ev.eval_status_id = sys_eval_status.id_eval_status WHERE user_id IN (SELECT user_id FROM evals WHERE eval_user_id = ".$user->id." AND year_id = ".$year." AND ev.is_deleted = 0) AND version = (SELECT MAX(version) FROM evals WHERE user_id = ev.user_id AND year_id = ".$year." AND ev.is_deleted = 0) AND year_id = ".$year." AND ev.is_deleted = 0 ORDER BY users.full_name");
         }
          
         
@@ -292,36 +295,39 @@ class ObjetiveController extends Controller
         $evalArray = [];
 
         for( $i = 0 ; count($empleados) > $i ; $i++ ){
-            $objetivos = Objetive::where('eval_id',$empleados[$i]->id_eval)->where('is_deleted',0)->get();
+            if($empleados[$i]->eval_status_id == $status || $status == 0) {
+                $objetivos = Objetive::where('eval_id',$empleados[$i]->id_eval)->where('is_deleted',0)->get();
             
-            $objetiveArray = [];
-            
-            
-            for( $j = 0 ; count($objetivos) > $j ; $j++ ){
-                $objetiveRow = new SObjetive();
-                $objetiveRow->id_obj = $objetivos[$j]->id_objetive;
-                $objetiveRow->nameObj = $objetivos[$j]->name;
-                $objetiveRow->activitiesObj = $objetivos[$j]->activities;
-                $objetiveRow->score_id = $objetivos[$j]->score_id;
-                $objetiveRow->commentObj = $objetivos[$j]->comment;
-                $objetiveRow->weighing = $objetivos[$j]->weighing;
+                $objetiveArray = [];
+                
+                
+                for( $j = 0 ; count($objetivos) > $j ; $j++ ){
+                    $objetiveRow = new SObjetive();
+                    $objetiveRow->id_obj = $objetivos[$j]->id_objetive;
+                    $objetiveRow->nameObj = $objetivos[$j]->name;
+                    $objetiveRow->activitiesObj = $objetivos[$j]->activities;
+                    $objetiveRow->score_id = $objetivos[$j]->score_id;
+                    $objetiveRow->commentObj = $objetivos[$j]->comment;
+                    $objetiveRow->weighing = $objetivos[$j]->weighing;
 
-                $objetiveArray[$j] = $objetiveRow;
+                    $objetiveArray[$j] = $objetiveRow;
+                }
+
+                $evalRow = new SEval();
+                $evalRow->id_user = $empleados[$i]->id_user;
+                $evalRow->eval_id = $empleados[$i]->id_eval;
+                $evalRow->user_name = $empleados[$i]->name;
+                $evalRow->year_id = $empleados[$i]->year_id;
+                $evalRow->comment = $empleados[$i]->comment;
+                $evalRow->ver = $empleados[$i]->ver;
+                $evalRow->eval_status_id = $empleados[$i]->eval_status_id;
+                $evalRow->eval_status_name = $empleados[$i]->status_name;
+                $evalRow->score_id = $empleados[$i]->score_id;
+                $evalRow->score = $empleados[$i]->score;
+                $evalRow->objetives = $objetiveArray;
+                
+                $evalArray[$i] = $evalRow;
             }
-
-            $evalRow = new SEval();
-            $evalRow->id_user = $empleados[$i]->id_user;
-            $evalRow->eval_id = $empleados[$i]->id_eval;
-            $evalRow->user_name = $empleados[$i]->name;
-            $evalRow->year_id = $empleados[$i]->year_id;
-            $evalRow->comment = $empleados[$i]->comment;
-            $evalRow->eval_status_id = $empleados[$i]->eval_status_id;
-            $evalRow->eval_status_name = $empleados[$i]->status_name;
-            $evalRow->score_id = $empleados[$i]->score_id;
-            $evalRow->score = $empleados[$i]->score;
-            $evalRow->objetives = $objetiveArray;
-            
-            $evalArray[$i] = $evalRow;
         }
 
         $scores = Score::where('is_deleted','0')->orderBy('id_score','ASC')->pluck('id_score','name');
@@ -330,7 +336,7 @@ class ObjetiveController extends Controller
 
         $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
 
-        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName)->with('isDirector',$isDirector)->with('year',$year[0]->year);
+        return view('eval.list', compact('evalArray'))->with('scores',$scores)->with('scoreName',$scoreName)->with('isDirector',$isDirector)->with('year',$year[0]->year)->with('status',$status);
         
     }
 
@@ -349,14 +355,28 @@ class ObjetiveController extends Controller
         $clonEvaluacion->eval_user_id = $evaluacion->eval_user_id;
         $clonEvaluacion->comment = $request->comentario;
         $clonEvaluacion->eval_status_id = 1;
-        $clonEvaluacion->score = $evaluacion->score;
-        $clonEvaluacion->score_id = $evaluacion->score_id;
+        $clonEvaluacion->score = null;
+        $clonEvaluacion->score_id = null;
         $clonEvaluacion->is_deleted = 0;
         $clonEvaluacion->created_by =  $evaluacion->created_by;
         $clonEvaluacion->updated_by =  $evaluacion->updated_by;
         $clonEvaluacion->save(); 
 
         //crear copias de objetivos
+
+        
+        for($i = 0 ; count($request->arrNum) > $i ; $i++){
+            $obj = Objetive::findOrFail($request->arrNum[$i]);
+            if($request->arrCal[$i] != 0){
+                $obj->score_id = $request->arrCal[$i];
+            }else{
+                $obj->score_id = null;
+            }
+            
+            $obj->updated_by = auth()->id();
+            $obj->save();
+
+        }
 
         $objetivos = Objetive::where('eval_id',$request->id_evaluacion)->where('is_deleted',0)->get();
 
@@ -385,6 +405,29 @@ class ObjetiveController extends Controller
         $status_log->updated_by = auth()->id();
         $status_log->save();
         $data = 1;
+        $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
+        $notifyEmployee = 0;
+        $notifyEmployee = DB::table('users')->where('id',$evaluacion->user_id)->first();
+
+        if($notifyEmployee->approve_refuse_notification == 1){
+            try{
+                Mail::to($notifyEmployee->email)->send(new ManagersRefuseMail($year[0]->year)); 
+                //registrar que el envio de correo fue correcto
+                $log = new Mail_log(); 
+                $log->send_to = $evaluacion->eval_user_id;
+                $log->evaluator = auth()->id();
+                $log->is_send = 1;
+                $log->save();
+            }catch(\Throwable $th){
+                //registrar que el envio de correo fallo.
+                $log = new Mail_log(); 
+                $log->send_to = $evaluacion->id;
+                $log->evaluator = auth()->id();
+                $log->is_send = 0;
+                $log->save(); 
+            }
+                    
+        }
         return response()->json(array($data));
     }
 
@@ -435,6 +478,29 @@ class ObjetiveController extends Controller
             return false; 
         }
         if($evaluado == 1){
+            $notifyEmployee = 0;
+            $notifyEmployee = DB::table('users')->where('id',$evaluacion->user_id)->first();
+
+            if($notifyEmployee->approve_refuse_notification == 1){
+                try{
+                    Mail::to($notifyEmployee->email)->send(new ManagersApproveMail($year[0]->year)); 
+                    //registrar que el envio de correo fue correcto
+                    $log = new Mail_log(); 
+                    $log->send_to = $evaluacion->eval_user_id;
+                    $log->evaluator = auth()->id();
+                    $log->is_send = 1;
+                    $log->save();
+                }catch(\Throwable $th){
+                    //registrar que el envio de correo fallo.
+                    $log = new Mail_log(); 
+                    $log->send_to = $evaluacion->id;
+                    $log->evaluator = auth()->id();
+                    $log->is_send = 0;
+                    $log->save(); 
+                }
+                      
+            }
+
             $finished = ObjetiveController::check_employees_evals(auth()->id());
             if($finished == 1){
                 $notify = ObjetiveController::revisor_notify(auth()->id());

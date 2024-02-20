@@ -68,11 +68,12 @@ function aprobar(id_eval) {
     } else {
         $.ajax({
             type: 'post',
-            url: '../evalaprove',
+            url: '../../evalaprove',
             data: { 'id_empleado': id_eval, 'anio': anio, 'comentario': comentarios, 'arrNum': arrNum, 'arrCal': arrCal, 'score': score, 'score_redondeado': score_redondeado },
 
             success: function(data) {
                 Swal.fire("Evaluado", "La evaluación se realizó correctamente", "success");
+                window.location.reload(true);
                 $(icomentario).attr('readonly', true);
                 $(iapro).attr('disabled', true);
                 $(irecha).attr('disabled', true);
@@ -89,7 +90,6 @@ function aprobar(id_eval) {
                     text: 'El año esta cerrado',
                     allowOutsideClick: false
                 });
-                window.location.reload(true);
             }
         });
     }
@@ -108,6 +108,8 @@ function rechazar(id_eval) {
     var idesbloquear = "#desbloquear";
     var iini = "#ini";
     var irecalif = "#recalif";
+    var arrNum = [];
+    var arrCal = [];
 
     icomentario = icomentario.concat(id_eval);
     iapro = iapro.concat(id_eval);
@@ -131,6 +133,22 @@ function rechazar(id_eval) {
     arreglo = arreglo.split(',');
 
     for (var i = 0; arreglo.length > i; i = i + 1) {
+        var numObj = arreglo[i].replace('calificacion_nueva', '');
+        var califObj = document.getElementById(arreglo[i]).value;
+
+        document.getElementById(arreglo[i]).setAttribute('disabled', true);
+        // arreglo con id de objetivo
+
+        arrNum[i] = numObj;
+
+        //arreglo con calificación objetivo
+
+        arrCal[i] = califObj;
+
+
+    }
+
+    for (var i = 0; arreglo.length > i; i = i + 1) {
 
         document.getElementById(arreglo[i]).setAttribute('disabled', true);
 
@@ -138,14 +156,15 @@ function rechazar(id_eval) {
 
     $.ajax({
         type: 'post',
-        url: '../evalrefuse',
-        data: { 'id_evaluacion': id_eval, 'anio': anio, 'comentario': comentarios },
+        url: '../../evalrefuse',
+        data: { 'id_evaluacion': id_eval, 'anio': anio, 'comentario': comentarios, 'arrNum': arrNum, 'arrCal': arrCal },
 
         success: function(data) {
             $(icomentario).attr('disabled', true);
             $(iapro).attr('disabled', true);
             $(irecha).attr('disabled', true);
             Swal.fire("Rechazado", "La evaluacion se rechazo", "success");
+            window.location.reload(true);
 
 
         },
@@ -155,7 +174,6 @@ function rechazar(id_eval) {
                 text: 'El año esta cerrado',
                 allowOutsideClick: false
             });
-            window.location.reload(true);
         }
     });
 }

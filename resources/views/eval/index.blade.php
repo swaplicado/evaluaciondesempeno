@@ -69,15 +69,25 @@
                             <td>{{$data->name}}</td>
                             <td>{{$data->weighing}}%</td>
                             @if($data->score_id != null)
-                                <td>{{$data->score->name}}</td>
+                                @if($data->eval_status_id == 3)
+                                    <td>{{$data->score->name}}</td>
+                                @else
+                                    <td>Calificado</td>
+                                @endif
                             @else
                                 <td>Sin calificación</td>
                             @endif
                             <td>
                                 @if ( $evaluacion[0]->eval_status_id == 1 )
-                                    <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary check_year" id="edicion" title="Modificar este registro">
-                                        <i class="fa fa-fw fa-wrench"></i>
-                                    </a>
+                                    @if ($data->score_id != null)
+                                        <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary editar check_year" id="edicion" title="Modificar este registro">
+                                            <i class="fa fa-fw fa-wrench"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{route('editar_objetivo', ['id' => $data->id_objetive])}}" class="btn btn-primary check_year" id="edicion" title="Modificar este registro">
+                                            <i class="fa fa-fw fa-wrench"></i>
+                                        </a>   
+                                    @endif
                                     <form action="{{route('eliminar_objetivo', ['id' => $data->id_objetive])}}" class="d-inline form-eliminar check_year" method="POST">
                                         @csrf @method("delete")
                                         <button type="submit" class="btn btn-primary" id="eliminacion" title="Eliminar este registro">
@@ -103,13 +113,13 @@
             <p style="font-size:20px;"><b>Ponderación total:</b> {{$ponderacion}}%</p>
             @switch($evaluacion[0]->eval_status_id)
                     @case(1)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-primary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objetivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-primary"><i class="fa fa-list-ol" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-eye" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objetivos evaluados</span></p>
                         @break
                     @case(2)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-primary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objetivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list-ol" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-primary"><i class="fa fa-eye" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-secondary"><i class="fa fa-check" aria-hidden="true"></i> Objetivos evaluados</span></p>
                         @break
                     @case(3)
-                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-search" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-primary"><i class="fa fa-check" aria-hidden="true"></i> Objetivos evaluados</span></p>
+                        <p style="font-size:20px;"><b>Estatus evaluación:</b> <span class="badge badge-secondary"><i class="fa fa-list-ol" aria-hidden="true"></i> Definiendo objetivos</span> <span class="badge badge-secondary"><i class="fa fa-eye" aria-hidden="true"></i> Evaluando objetivos</span> <span class="badge badge-primary"><i class="fa fa-check" aria-hidden="true"></i> Objetivos evaluados</span></p>
                         @break
             @endswitch
             @if($evaluacion[0]->comment != null)
