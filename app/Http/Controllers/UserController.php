@@ -52,11 +52,11 @@ class UserController extends Controller
 
     public function createGlobal()
     {
-        $json = '[{"id_global_user": 1,"username": "CARMONA FIGUEROA, EDWIN OMAR","employee_num": 990,"external_id": 3338, "email": "cesar.i@swaplicado.com.mx", "password": 1234}]';
+        // $json = '[{"id_global_user": 1,"username": "CARMONA FIGUEROA, EDWIN OMAR","employee_num": 990,"external_id": 3338, "email": "cesar.i@swaplicado.com.mx", "password": 1234}]';
         $departments = Department::where('is_delete',0)->get();
         $jobs = Job::where('is_delete',0)->get();
         $year = DB::table('config_years')->where('id_year',session()->get('id_year'))->get();
-        $uGlobales = json_decode($json);
+        // $uGlobales = json_decode($json);
         $data = SPghUtils::loginToPGH();
         $headers = [
             'Accept' => 'application/json',
@@ -64,12 +64,13 @@ class UserController extends Controller
             'Authorization' => $data->token_type.' '.$data->access_token
         ];
         
+        $config = \App\SUtils\SConfiguration::getConfigurations();
         $client = new Client([
-            'base_uri' => '127.0.0.1/GHPort/public/api/',
+            'base_uri' => $config->pghApiRoute,
             'timeout' => 30.0,
             'headers' => $headers
         ]);   
-        $body = '{"company":"8"}';
+        $body = '{"company":"'.$config->evalIdSystem.'"}';
         $request = new \GuzzleHttp\Psr7\Request('GET', 'getPendingUser', $headers,$body);
         $response = $client->sendAsync($request)->wait();
         
@@ -205,13 +206,14 @@ class UserController extends Controller
                         'Authorization' => $data->token_type.' '.$data->access_token
                     ];
                 
+                    $config = \App\SUtils\SConfiguration::getConfigurations();
                     $client = new Client([
-                        'base_uri' => '127.0.0.1/GHPort/public/api/',
+                        'base_uri' => $config->pghApiRoute,
                         'timeout' => 30.0,
                         'headers' => $headers,
                     ]);
                 
-                    $body = json_encode(['user' => $user, 'id_global' => $request->fglobal, 'id_system' => '8']);
+                    $body = json_encode(['user' => $user, 'id_global' => $request->fglobal, 'id_system' => $config->pghApiRoute]);
                     
                     $request = new \GuzzleHttp\Psr7\Request('POST', 'insertUserVsSystem', $headers, $body);
                     $response = $client->sendAsync($request)->wait();
@@ -331,16 +333,17 @@ class UserController extends Controller
                         'Accept' => '*/*',
                         'Authorization' => $data->token_type.' '.$data->access_token
                     ];
-                
+                    
+                    $config = \App\SUtils\SConfiguration::getConfigurations();
                     $client = new Client([
-                        'base_uri' => '127.0.0.1/GHPort/public/api/',
+                        'base_uri' => $config->pghApiRoute,
                         'timeout' => 30.0,
                         'headers' => $headers,
                     ]);
                 
-                    $body = json_encode(['user' => $user, 'fromSystem' => '8']);
+                    $body = json_encode(['user' => $user, 'fromSystem' => $config->evalIdSystem]);
                     
-                    $request = new \GuzzleHttp\Psr7\Request('POST', 'updateGlobalPassword', $headers, $body);
+                    $request = new \GuzzleHttp\Psr7\Request('POST', 'updateGlobal', $headers, $body);
                     $response = $client->sendAsync($request)->wait();
                     $jsonString = $response->getBody()->getContents();
                     $data = json_decode($jsonString);

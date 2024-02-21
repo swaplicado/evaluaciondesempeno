@@ -9,12 +9,11 @@ use App\User;
 class apiGlobalUsersController extends Controller
 {
     public static function getUser($full_name, $username, $external_id, $employee_num){
-        $query = User::where('is_deleted', null);
+        $query = User::where('is_delete', null);
 
         if(!is_null($username)){
             $query = $query->where('name', $username);
         }
-
         if(!is_null($full_name)){
             $query = $query->where('full_name', $full_name);
         }
@@ -144,9 +143,9 @@ class apiGlobalUsersController extends Controller
             $us = (object)$Users;
             \DB::beginTransaction();
             $user = User::find($us->user_system_id);
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = $request->pass;
+            $user->name = $Users->name;
+            $user->email = $Users->email;
+            $user->password = $Users->pass;
             $user->updated_by = 15;
             $user->save(); 
               
