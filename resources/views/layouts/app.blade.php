@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Evaluación Desempeño</title>
+    <title>Evaluación del Desempeño</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>

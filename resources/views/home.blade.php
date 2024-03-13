@@ -1,10 +1,10 @@
 @extends('adminlte::page')
 
-@section('title', 'Evaluación desempeño ' . $year)
+@section('title', 'Evaluación Desempeño ' . $year)
 
 @section('content_header')
     <link rel="shortcut icon" href="{{ asset('favicons/icono.png') }}" />
-    <h1><b>Evaluación de desempeño.</b> </h1>
+    <h1><b>Evaluación del Desempeño.</b> </h1>
     @if($tipo == 1)
         <h5>La fecha limite es <b>{{$limite}}</b>, faltan {{$diferencia}} días para que se cierre la evaluación.</h5>   
     @elseif($tipo == 2)
